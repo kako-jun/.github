@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'Project name (e.g., diffx, lawkit, diffai)'
+        required: true
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout shared repository
+      uses: actions/checkout@v4
+      with:
+        repository: kako-jun/.github
+        path: .github-shared
+        
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        
+    - name: Run CI tests
+      run: |
+        chmod +x ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
+        ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
