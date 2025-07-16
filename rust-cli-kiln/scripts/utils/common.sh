@@ -27,7 +27,13 @@ find_project_root() {
 
 # Initialize project root and name
 init_project_vars() {
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
+    # Use the calling script's directory
+    if [ -n "${BASH_SOURCE[1]:-}" ]; then
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
+    else
+        # Fallback for direct execution
+        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    fi
     
     # Determine project root
     if [ -f "./Cargo.toml" ]; then

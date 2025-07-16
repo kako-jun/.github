@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Checkout project repository
+      uses: actions/checkout@v4
+      
     - name: Checkout shared repository
       uses: actions/checkout@v4
       with:
