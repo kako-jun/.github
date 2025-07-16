@@ -23,11 +23,6 @@ jobs:
     - name: Checkout project repository
       uses: actions/checkout@v4
       
-    - name: Debug repository access
-      run: |
-        echo "Testing repository access..."
-        curl -s "https://api.github.com/repos/kako-jun/.github" | jq '.private' || echo "Repository access failed"
-        
     - name: Checkout shared repository
       uses: actions/checkout@v4
       with:

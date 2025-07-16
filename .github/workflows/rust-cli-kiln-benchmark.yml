@@ -24,11 +24,14 @@ jobs:
     timeout-minutes: 5  # Shorter timeout
     
     steps:
+    - name: Checkout project repository
+      uses: actions/checkout@v4
+      
     - name: Checkout shared repository
       uses: actions/checkout@v4
       with:
         repository: kako-jun/.github
-        path: .github-shared
+        path: github-shared
         
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
@@ -44,8 +47,13 @@ jobs:
         
     - name: Run benchmarks
       run: |
+        # Initialize project variables
+        chmod +x ./github-shared/rust-cli-kiln/scripts/utils/common.sh
+        source ./github-shared/rust-cli-kiln/scripts/utils/common.sh
+        init_project_vars
+        
         # Quick benchmark run with shorter sampling time
-        CARGO_CRITERION_ARGS="--sample-size 10 --measurement-time 1" cargo bench --package diffx-core > benchmark_results.txt 2>&1 || true
+        CARGO_CRITERION_ARGS="--sample-size 10 --measurement-time 1" cargo bench --package ${PROJECT_NAME}-core > benchmark_results.txt 2>&1 || true
         cat benchmark_results.txt
         
     - name: Check performance regression
@@ -149,7 +157,9 @@ jobs:
         
     - name: Run PR benchmarks
       run: |
-        CARGO_CRITERION_ARGS="--sample-size 10 --measurement-time 1" cargo bench --package diffx-core > pr_benchmark.txt 2>&1 || true
+        # Get project name from repository
+        PROJECT_NAME=$(basename $(pwd))
+        CARGO_CRITERION_ARGS="--sample-size 10 --measurement-time 1" cargo bench --package ${PROJECT_NAME}-core > pr_benchmark.txt 2>&1 || true
         echo "## 📊 Performance Impact" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Benchmark Results" >> $GITHUB_STEP_SUMMARY
