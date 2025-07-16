@@ -10,13 +10,19 @@ on:
         description: 'Release tag'
         required: true
         type: string
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'Project name (e.g., diffx, lawkit, diffai)'
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 env:
   CARGO_TERM_COLOR: always
-  PROJECT_NAME: ${{ github.event.repository.name }}
+  PROJECT_NAME: ${{ inputs.project-name || github.event.repository.name }}
 
 jobs:
   build-and-upload:
