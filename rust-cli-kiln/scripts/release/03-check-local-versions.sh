@@ -5,13 +5,12 @@
 
 set -e
 
-# Find the project root directory (where Cargo.toml exists)
+# Load common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-PROJECT_NAME=$(basename "$PROJECT_ROOT")
+source "$SCRIPT_DIR/../utils/common.sh"
 
-# Change to project root
-cd "$PROJECT_ROOT"
+# Initialize project variables
+init_project_vars
 
 echo "Checking version consistency across ${PROJECT_NAME} packages..."
 
