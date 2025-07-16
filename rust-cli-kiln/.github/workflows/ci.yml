@@ -20,9 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
+    - name: Checkout shared repository
       uses: actions/checkout@v4
-      
+      with:
+        repository: kako-jun/.github
+        path: .github-shared
+        
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
       
@@ -37,5 +40,5 @@ jobs:
         
     - name: Run CI tests
       run: |
-        chmod +x ./mnt/rust-cli-kiln/scripts/testing/quick-check.sh
-        ./mnt/rust-cli-kiln/scripts/testing/quick-check.sh
+        chmod +x ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
+        ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
