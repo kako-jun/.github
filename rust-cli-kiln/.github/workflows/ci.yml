@@ -5,6 +5,12 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'Project name (e.g., diffx, lawkit, diffai)'
+        required: true
+        type: string
 
 env:
   CARGO_TERM_COLOR: always
@@ -31,5 +37,5 @@ jobs:
         
     - name: Run CI tests
       run: |
-        chmod +x ./scripts/testing/quick-check.sh
-        ./scripts/testing/quick-check.sh
+        chmod +x ./mnt/rust-cli-kiln/scripts/testing/quick-check.sh
+        ./mnt/rust-cli-kiln/scripts/testing/quick-check.sh
