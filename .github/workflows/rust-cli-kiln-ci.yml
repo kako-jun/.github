@@ -23,11 +23,17 @@ jobs:
     - name: Checkout project repository
       uses: actions/checkout@v4
       
+    - name: Debug repository access
+      run: |
+        echo "Testing repository access..."
+        curl -s "https://api.github.com/repos/kako-jun/.github" | jq '.private' || echo "Repository access failed"
+        
     - name: Checkout shared repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
       with:
         repository: kako-jun/.github
-        path: .github-shared
+        path: github-shared
+        token: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
@@ -41,24 +47,14 @@ jobs:
           target
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         
-    - name: Debug and run CI tests
+    - name: Verify shared repository structure
       run: |
-        echo "=== Debug: Current directory ==="
-        pwd
-        echo "=== Debug: List files ==="
-        ls -la
-        echo "=== Debug: Check .github-shared ==="
-        ls -la .github-shared/
-        echo "=== Debug: Check rust-cli-kiln ==="
-        ls -la .github-shared/rust-cli-kiln/
-        echo "=== Debug: Check scripts ==="
-        ls -la .github-shared/rust-cli-kiln/scripts/
-        echo "=== Debug: Check utils ==="
-        ls -la .github-shared/rust-cli-kiln/scripts/utils/
-        echo "=== Debug: Check common.sh ==="
-        cat .github-shared/rust-cli-kiln/scripts/utils/common.sh | head -10
-        echo "=== Debug: Check quick-check.sh ==="
-        cat .github-shared/rust-cli-kiln/scripts/testing/quick-check.sh | head -15
-        echo "=== Debug: Run script ==="
-        chmod +x ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
-        ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
+        echo "=== Verifying shared repository structure ==="
+        ls -la github-shared/
+        ls -la github-shared/rust-cli-kiln/
+        ls -la github-shared/rust-cli-kiln/scripts/
+        
+    - name: Run CI tests
+      run: |
+        chmod +x ./github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
+        ./github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
