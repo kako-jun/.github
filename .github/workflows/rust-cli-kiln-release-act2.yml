@@ -75,7 +75,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         TAG_NAME="${{ needs.get-tag.outputs.tag-name }}"
-        node ../github-shared/rust-cli-kiln/scripts/download-all-binaries.js
+        node scripts/download-all-binaries.js
     
     - name: Publish to npm
       working-directory: ${{ env.PROJECT_NAME }}-npm
