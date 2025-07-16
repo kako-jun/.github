@@ -6,11 +6,12 @@
 
 ## 🎯 リリース手順（9ステップ）
 
-### ステップ0: 事前チェック（推奨）
+### ステップ0: 事前チェック（必須）
 ```bash
 ./github-shared/rust-cli-kiln/scripts/release/00-pre-release-check.sh
 ```
-- git状態、バージョン整合性、認証、依存関係の包括的確認
+- **バージョン更新前の**git状態、認証、依存関係の包括的確認
+- clean working directoryの確認（バージョン更新前に必須）
 - 問題発見時は早期修正可能
 
 ### ステップ1: 公開済みバージョンの確認
@@ -40,6 +41,7 @@
 ```
 - GitHub Actions Release Act1と同等のテスト実行
 - Rustビルド・テスト・crates.io公開準備確認（dry runのみ）
+- **バージョン更新後のdiffがある状態で実行（正常）**
 - **実際の公開はGitHub Actionsでのみ実行**
 - **失敗時はここで停止**
 - **Claude実行時の注意**: 5分以上かかる場合があるため、タイムアウトを10分に設定して実行
@@ -50,6 +52,7 @@
 ```
 - GitHub Actions Release Act2と同等のテスト実行
 - npm・PyPI公開準備確認（dry runのみ）
+- **バージョン更新後のdiffがある状態で実行（正常）**
 - **実際の公開はGitHub Actionsでのみ実行**
 - **Act1成功後のみ実行**
 
@@ -57,6 +60,7 @@
 ```bash
 ./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh
 ```
+- **バージョン更新の変更をコミット**（ここで初めてcommit）
 - Gitタグ作成・プッシュ
 - GitHubリリースページ作成
 - GitHub Actionsトリガー
@@ -122,6 +126,11 @@
 - フォーマット・Clippy・ビルド・テスト
 
 ## 🚨 重要な原則
+
+### Git状態管理
+- **ステップ0**: clean working directory必須（バージョン更新前）
+- **ステップ2-5**: diffがある状態で実行（バージョン更新後、正常）
+- **ステップ6**: コミット→タグ作成（ここで初めてcommit）
 
 ### 2層テスト体系
 - **日常開発**: `quick-check.sh` → GitHub Actions CI
