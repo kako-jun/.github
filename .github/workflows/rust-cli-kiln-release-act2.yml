@@ -11,13 +11,19 @@ on:
         description: 'Release tag to publish wrappers for'
         required: true
         type: string
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'Project name (e.g., diffx, lawkit, diffai)'
+        required: true
+        type: string
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   CARGO_TERM_COLOR: always
-  PROJECT_NAME: ${{ github.event.repository.name }}
+  PROJECT_NAME: ${{ inputs.project-name || github.event.repository.name }}
 
 jobs:
   get-tag:
@@ -43,7 +49,14 @@ jobs:
     needs: [get-tag, publish-pypi]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout project repository
+      uses: actions/checkout@v4
+      
+    - name: Checkout shared repository
+      uses: actions/checkout@v4
+      with:
+        repository: kako-jun/.github
+        path: github-shared
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -53,8 +66,8 @@ jobs:
     
     - name: Run pre-release tests for npm
       run: |
-        chmod +x ./scripts/testing/05-pre-release-test-act2.sh
-        ./scripts/testing/05-pre-release-test-act2.sh
+        chmod +x ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
+        ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
     
     - name: Download all platform binaries for npm package
       working-directory: ${{ env.PROJECT_NAME }}-npm
@@ -62,7 +75,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         TAG_NAME="${{ needs.get-tag.outputs.tag-name }}"
-        node scripts/download-all-binaries.js
+        node ../github-shared/rust-cli-kiln/scripts/download-all-binaries.js
     
     - name: Publish to npm
       working-directory: ${{ env.PROJECT_NAME }}-npm
@@ -88,7 +101,14 @@ jobs:
             target: aarch64-apple-darwin
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout project repository
+      uses: actions/checkout@v4
+      
+    - name: Checkout shared repository
+      uses: actions/checkout@v4
+      with:
+        repository: kako-jun/.github
+        path: github-shared
     
     - name: Setup Python
       uses: actions/setup-python@v5
