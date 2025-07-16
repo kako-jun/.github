@@ -33,7 +33,6 @@ jobs:
       with:
         repository: kako-jun/.github
         path: github-shared
-        token: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
