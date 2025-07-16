@@ -38,8 +38,24 @@ jobs:
           target
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         
-    - name: Run CI tests
+    - name: Debug and run CI tests
       run: |
-        # Stay in project root directory where Cargo.toml exists
+        echo "=== Debug: Current directory ==="
+        pwd
+        echo "=== Debug: List files ==="
+        ls -la
+        echo "=== Debug: Check .github-shared ==="
+        ls -la .github-shared/
+        echo "=== Debug: Check rust-cli-kiln ==="
+        ls -la .github-shared/rust-cli-kiln/
+        echo "=== Debug: Check scripts ==="
+        ls -la .github-shared/rust-cli-kiln/scripts/
+        echo "=== Debug: Check utils ==="
+        ls -la .github-shared/rust-cli-kiln/scripts/utils/
+        echo "=== Debug: Check common.sh ==="
+        cat .github-shared/rust-cli-kiln/scripts/utils/common.sh | head -10
+        echo "=== Debug: Check quick-check.sh ==="
+        cat .github-shared/rust-cli-kiln/scripts/testing/quick-check.sh | head -15
+        echo "=== Debug: Run script ==="
         chmod +x ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
         ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
