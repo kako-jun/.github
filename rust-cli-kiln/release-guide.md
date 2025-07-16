@@ -48,10 +48,14 @@
 
 ### ステップ5: Act2テスト（言語ラッパー）
 ```bash
+# 事前要件: Python環境でmaturinインストール必須
+source .venv/bin/activate && uv pip install maturin wheel build twine
+
 ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
 ```
 - GitHub Actions Release Act2と同等のテスト実行
 - npm・PyPI公開準備確認（dry runのみ）
+- **maturin未インストール時は失敗扱い（WARNING時は停止）**
 - **バージョン更新後のdiffがある状態で実行（正常）**
 - **実際の公開はGitHub Actionsでのみ実行**
 - **Act1成功後のみ実行**

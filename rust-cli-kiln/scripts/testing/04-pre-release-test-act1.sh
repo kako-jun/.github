@@ -178,6 +178,85 @@ main() {
         exit 1
     fi
     
+    # Test Rust crate functionality (matching 08 script logic)
+    print_info "Testing Rust crate functionality..."
+    
+    # Create temporary project for testing (outside workspace)
+    TEMP_CARGO_DIR=$(mktemp -d)
+    trap 'rm -rf "$TEMP_CARGO_DIR"' EXIT
+    
+    cd "$TEMP_CARGO_DIR"
+    cargo init --name test-project > /dev/null 2>&1
+    
+    # Create standalone Cargo.toml (not workspace member)
+    cat > Cargo.toml << EOF
+[package]
+name = "test-project"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+EOF
+    
+    # Test CLI functionality
+    print_info "Testing CLI crate functionality..."
+    if "$PROJECT_ROOT/target/release/${PROJECT_NAME}" --version > /dev/null 2>&1; then
+        CLI_VERSION=$("$PROJECT_ROOT/target/release/${PROJECT_NAME}" --version 2>/dev/null | head -1)
+        print_success "CLI works: $CLI_VERSION"
+    else
+        print_error "CLI execution failed"
+        exit 1
+    fi
+    
+    # Test Core crate functionality
+    print_info "Testing Core crate functionality..."
+    # Add local dependency to test project
+    echo "${PROJECT_NAME}-core = { path = \"$PROJECT_ROOT/${PROJECT_NAME}-core\" }" >> Cargo.toml
+    
+    # Create test to verify core crate functions can be called
+    cat > src/main.rs << EOF
+use ${PROJECT_NAME//-/_}_core;
+use serde_json::json;
+
+fn main() {
+    // Test basic diff function
+    let v1 = json!({"test": "value1"});
+    let v2 = json!({"test": "value2"});
+    let result = ${PROJECT_NAME//-/_}_core::diff_basic(&v1, &v2);
+    println!("Basic diff function works: {} differences found", result.len());
+    
+    // Test diff function with options
+    let result2 = ${PROJECT_NAME//-/_}_core::diff(&v1, &v2, true, false, false);
+    println!("Enhanced diff function works: {} differences found", result2.len());
+    
+    println!("Core crate functions tested successfully");
+}
+EOF
+    
+    # Add required dependencies
+    echo "serde_json = \"1.0\"" >> Cargo.toml
+    
+    if cargo check; then
+        print_success "Core crate builds successfully"
+    else
+        print_error "Core crate build failed"
+        print_error "Cargo.toml contents:"
+        cat Cargo.toml
+        print_error "Build directory contents:"
+        ls -la
+        exit 1
+    fi
+    
+    # Run function test
+    if cargo run > /dev/null 2>&1; then
+        print_success "Core crate function test passed"
+    else
+        print_error "Core crate function test failed"
+        exit 1
+    fi
+    
+    cd "$PROJECT_ROOT"
+    
     print_success "=== Pre-release Test Act 1 PASSED ==="
     print_info "All checks passed! Ready for Act 2 testing."
     echo ""

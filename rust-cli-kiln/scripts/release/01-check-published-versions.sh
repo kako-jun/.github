@@ -40,7 +40,7 @@ echo ""
 # Check crates.io versions
 echo "📦 Checking crates.io..."
 CRATES_CORE_VERSION=$(cargo search ${PROJECT_NAME}-core --limit 1 2>/dev/null | grep -E "^${PROJECT_NAME}-core" | sed 's/.*= "\([^"]*\)".*/\1/' || echo "not found")
-CRATES_CLI_VERSION=$(cargo search ${PROJECT_NAME}-cli --limit 1 2>/dev/null | grep -E "^${PROJECT_NAME}-cli" | sed 's/.*= "\([^"]*\)".*/\1/' || echo "not found")
+CRATES_CLI_VERSION=$(cargo search ${PROJECT_NAME} --limit 1 2>/dev/null | grep -E "^${PROJECT_NAME} " | sed 's/.*= "\([^"]*\)".*/\1/' || echo "not found")
 
 # Check npm registry
 echo "📦 Checking npm registry..."

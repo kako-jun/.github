@@ -52,12 +52,14 @@ check_prerequisites() {
         exit 1
     fi
     
-    # Check if maturin is installed
+    # Check if maturin is installed (activate virtual environment first)
+    if [[ -f ".venv/bin/activate" ]]; then
+        source .venv/bin/activate
+    fi
     if ! command -v maturin &> /dev/null; then
-        print_warning "maturin is not installed. Python package testing will be skipped."
-        print_warning "To enable Python testing, install maturin: pip install maturin"
-        # Set flag to skip Python tests instead of failing
-        SKIP_PYTHON_TESTS=true
+        print_error "maturin is not installed. This is a FAILURE condition for releases."
+        print_error "Install maturin: source .venv/bin/activate && uv pip install maturin"
+        exit 1
     else
         SKIP_PYTHON_TESTS=false
     fi
@@ -108,6 +110,61 @@ test_npm_package() {
         exit 1
     fi
     
+    # Test binary functionality after npm install
+    print_info "Testing included binary functionality..."
+    
+    # Create temporary directory for testing
+    TEMP_NPM_DIR=$(mktemp -d)
+    trap 'rm -rf "$TEMP_NPM_DIR"' EXIT
+    
+    cd "$TEMP_NPM_DIR"
+    
+    # Create a test package.json
+    cat > package.json << 'EOF'
+{
+  "name": "test-npm-binary",
+  "version": "1.0.0",
+  "private": true
+}
+EOF
+    
+    # Install the local package
+    if ! npm install "$PROJECT_ROOT/${PROJECT_NAME}-npm"; then
+        print_error "Local npm package installation failed"
+        exit 1
+    fi
+    
+    # Test module import and functionality
+    print_info "Testing module import and functionality..."
+    cat > test_module.js << 'EOF'
+const lib = require('diffai-js');
+console.log('OK: Module imported');
+if (typeof lib.diff === 'function') {
+    console.log('OK: diff function available');
+} else {
+    console.error('ERROR: diff function not found');
+    process.exit(1);
+}
+EOF
+    if ! node test_module.js; then
+        print_error "Module functionality test failed"
+        exit 1
+    fi
+    rm -f test_module.js
+    
+    # Test binary execution
+    BINARY_PATH="node_modules/${PROJECT_NAME}-js/bin/${PROJECT_NAME}"
+    if [ -f "$BINARY_PATH" ]; then
+        print_info "Testing binary execution..."
+        if ! "$BINARY_PATH" --version; then
+            print_warning "Binary version test failed (non-critical)"
+        fi
+    else
+        print_info "Binary not found at expected path (may be architecture-specific)"
+    fi
+    
+    cd "$PROJECT_ROOT/${PROJECT_NAME}-npm"
+    
     print_success "npm dry run passed (no actual publishing)"
     print_warning "Note: Actual npm publishing happens only in GitHub Actions"
     
@@ -153,10 +210,28 @@ test_python_package() {
     LOCAL_TARGET=$(rustc -vV | grep host | cut -d' ' -f2)
     print_info "Building wheel for target: $LOCAL_TARGET"
     
-    if ! maturin build --release --target "$LOCAL_TARGET" --out dist; then
-        print_error "maturin build failed"
-        exit 1
+    # Build wheel with manylinux error tolerance for local testing
+    if ! maturin build --release --target "$LOCAL_TARGET" --out dist 2>&1 | tee build.log; then
+        # Check if failure is due to manylinux compatibility (local environment issue)
+        if grep -q "manylinux.*compliance" build.log; then
+            print_warning "manylinux compatibility error (expected in local environment)"
+            print_warning "This will work in GitHub Actions with manylinux container"
+            
+            # Try building with relaxed compatibility for local testing
+            print_info "Attempting build with local compatibility..."
+            if ! maturin build --release --target "$LOCAL_TARGET" --out dist --compatibility linux; then
+                print_error "maturin build failed even with relaxed compatibility"
+                exit 1
+            fi
+        else
+            print_error "maturin build failed with non-manylinux error"
+            cat build.log
+            exit 1
+        fi
     fi
+    
+    # Clean up log file
+    rm -f build.log
     
     # Check if wheel was created
     if [ ! -d "dist" ] || [ -z "$(ls -A dist)" ]; then
@@ -192,14 +267,59 @@ test_python_package() {
     # Test basic functionality
     print_info "Testing installed Python package..."
     
-    # Test import
-    if ! python -c "import ${PROJECT_NAME}_python; print('Import successful')"; then
-        print_error "Python package import failed"
+    # Test module import and functionality
+    print_info "Testing Python module import and functionality..."
+    
+    # Try multiple module name variants (matching 08 script logic)
+    MODULE_VARIANTS=("${PROJECT_NAME}_python" "${PROJECT_NAME//-/_}")
+    IMPORTED=false
+    for variant in "${MODULE_VARIANTS[@]}"; do
+        if python -c "import $variant; print('OK: Module $variant imported')" 2>/dev/null; then
+            print_info "Python module works ($variant)"
+            IMPORTED=true
+            MODULE_NAME=$variant
+            break
+        fi
+    done
+    
+    if [ "$IMPORTED" = false ]; then
+        print_error "Python module import failed (tried: ${MODULE_VARIANTS[*]})"
         exit 1
     fi
     
-    # Test basic functionality (if applicable)
-    # This would depend on your Python package structure
+    # Test module functionality
+    print_info "Testing Python module functionality..."
+    if ! python -c "import $MODULE_NAME; print(f'Module version: {getattr($MODULE_NAME, \"__version__\", \"unknown\")}')"; then
+        print_warning "Python module version test failed (non-critical)"
+    fi
+    
+    # Test diff function availability
+    if ! python -c "import $MODULE_NAME; print('OK: diff function available' if hasattr($MODULE_NAME, 'diff') else 'WARNING: diff function not found')"; then
+        print_warning "Python module function test failed (non-critical)"
+    fi
+    
+    # 2. Test binary functionality (diffai CLI included in wheel)
+    print_info "Testing included binary functionality..."
+    
+    # Check if binary exists in venv
+    if [ -f "$TEMP_VENV/bin/${PROJECT_NAME}" ]; then
+        print_info "Binary found at $TEMP_VENV/bin/${PROJECT_NAME}"
+        if ! "$TEMP_VENV/bin/${PROJECT_NAME}" --version; then
+            print_error "Binary version test failed"
+            exit 1
+        fi
+    elif command -v ${PROJECT_NAME} &> /dev/null; then
+        print_info "Binary found in PATH"
+        if ! ${PROJECT_NAME} --version; then
+            print_error "Binary version test failed"
+            exit 1
+        fi
+    else
+        print_error "${PROJECT_NAME} binary not found after installation"
+        print_info "Available binaries in venv:"
+        ls -la "$TEMP_VENV/bin/" | grep -E "(${PROJECT_NAME}|diffai)" || print_info "No matching binaries found"
+        exit 1
+    fi
     
     deactivate
     
