@@ -109,7 +109,7 @@ if [ $ISSUES_FOUND -eq 0 ]; then
     success "All version checks passed! ✨"
     echo ""
     info "Ready for publishing:"
-    echo "   ./scripts/publish-all.sh"
+    echo "   ./github-shared/rust-cli-kiln/scripts/publish-all.sh"
 else
     error "Found $ISSUES_FOUND version consistency issue(s)"
     echo ""

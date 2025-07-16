@@ -8,35 +8,35 @@
 
 ### ステップ0: 事前チェック（推奨）
 ```bash
-./scripts/release/00-pre-release-check.sh
+./github-shared/rust-cli-kiln/scripts/release/00-pre-release-check.sh
 ```
 - git状態、バージョン整合性、認証、依存関係の包括的確認
 - 問題発見時は早期修正可能
 
 ### ステップ1: 公開済みバージョンの確認
 ```bash
-./scripts/release/01-check-published-versions.sh
+./github-shared/rust-cli-kiln/scripts/release/01-check-published-versions.sh
 ```
 - crates.io, PyPI, npmの現在の公開バージョンを確認
 - 次にリリースすべきバージョンを判断
 
 ### ステップ2: バージョン更新
 ```bash
-./scripts/release/02-update-version.sh X.Y.Z
+./github-shared/rust-cli-kiln/scripts/release/02-update-version.sh X.Y.Z
 ```
 - 全製品コンポーネントのバージョンを一括更新
-- 例: `./scripts/release/02-update-version.sh 1.2.3`
+- 例: `./github-shared/rust-cli-kiln/scripts/release/02-update-version.sh 1.2.3`
 
 ### ステップ3: 更新後の整合性確認
 ```bash
-./scripts/release/03-check-local-versions.sh
+./github-shared/rust-cli-kiln/scripts/release/03-check-local-versions.sh
 ```
 - 更新後のローカルファイル内バージョンの整合性チェック
 - 抜けや不一致がないか確認
 
 ### ステップ4: Act1テスト（コア機能）
 ```bash
-./scripts/testing/04-pre-release-test-act1.sh
+./github-shared/rust-cli-kiln/scripts/testing/04-pre-release-test-act1.sh
 ```
 - GitHub Actions Release Act1と同等のテスト実行
 - Rustビルド・テスト・crates.io公開準備確認（dry runのみ）
@@ -46,7 +46,7 @@
 
 ### ステップ5: Act2テスト（言語ラッパー）
 ```bash
-./scripts/testing/05-pre-release-test-act2.sh
+./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
 ```
 - GitHub Actions Release Act2と同等のテスト実行
 - npm・PyPI公開準備確認（dry runのみ）
@@ -55,7 +55,7 @@
 
 ### ステップ6: リリースタグ作成
 ```bash
-./scripts/release/06-create-release-tag.sh
+./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh
 ```
 - Gitタグ作成・プッシュ
 - GitHubリリースページ作成
@@ -63,14 +63,14 @@
 
 ### ステップ7: リリース監視
 ```bash
-./scripts/release/07-monitor-release.sh vX.Y.Z
+./github-shared/rust-cli-kiln/scripts/release/07-monitor-release.sh vX.Y.Z
 ```
 - GitHub Actionsの実行状況監視
 - 全プラットフォームでの公開完了確認
 
 ### ステップ8: 公開パッケージ検証（オプション）
 ```bash
-./scripts/testing/08-test-published-packages.sh
+./github-shared/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
 ```
 - npm、PyPI公開パッケージの動作確認
 - 実環境でのインストール・動作テスト
@@ -81,31 +81,31 @@
 
 ```bash
 # ステップ0: 事前チェック（推奨）
-./scripts/release/00-pre-release-check.sh
+./github-shared/rust-cli-kiln/scripts/release/00-pre-release-check.sh
 
 # ステップ1: 現在の状況確認
-./scripts/release/01-check-published-versions.sh
+./github-shared/rust-cli-kiln/scripts/release/01-check-published-versions.sh
 
 # ステップ2: 新バージョンに更新
-./scripts/release/02-update-version.sh X.Y.Z
+./github-shared/rust-cli-kiln/scripts/release/02-update-version.sh X.Y.Z
 
 # ステップ3: 整合性確認
-./scripts/release/03-check-local-versions.sh
+./github-shared/rust-cli-kiln/scripts/release/03-check-local-versions.sh
 
 # ステップ4: Act1テスト
-./scripts/testing/04-pre-release-test-act1.sh
+./github-shared/rust-cli-kiln/scripts/testing/04-pre-release-test-act1.sh
 
 # ステップ5: Act2テスト  
-./scripts/testing/05-pre-release-test-act2.sh
+./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
 
 # ステップ6: リリース実行
-./scripts/release/06-create-release-tag.sh
+./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh
 
 # ステップ7: 監視
-./scripts/release/07-monitor-release.sh vX.Y.Z
+./github-shared/rust-cli-kiln/scripts/release/07-monitor-release.sh vX.Y.Z
 
 # ステップ8: 公開パッケージ検証（オプション）
-./scripts/testing/08-test-published-packages.sh
+./github-shared/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
 ```
 
 ## 🛠️ 日常開発用クイックチェック
@@ -114,7 +114,7 @@
 
 ```bash
 # 通常のプッシュ前チェック（5-10秒）
-./scripts/testing/quick-check.sh
+./github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
 ```
 
 - GitHub Actions CIと完全同等
@@ -170,7 +170,7 @@ AIが「リリースして」と言われた時：
 
 ### 失敗したリリースの完全清理
 ```bash
-./scripts/release/cleanup-failed-release.sh vX.Y.Z
+./github-shared/rust-cli-kiln/scripts/release/cleanup-failed-release.sh vX.Y.Z
 ```
 - GitHub release削除
 - Git tag削除（local/remote）

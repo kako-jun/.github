@@ -215,7 +215,7 @@ test_package_consistency() {
     print_info "=== Testing package consistency ==="
     
     # Run the local version check
-    "$PROJECT_ROOT/scripts/release/03-check-local-versions.sh"
+    "$(dirname "$SCRIPT_DIR")/release/03-check-local-versions.sh"
     
     print_success "Package consistency check passed"
 }
@@ -241,7 +241,7 @@ main() {
     print_info "All wrapper package tests passed!"
     echo ""
     print_info "Both Act 1 and Act 2 simulations completed successfully."
-    print_info "Ready to create release tag with: ./scripts/release/create-release-tag.sh"
+    print_info "Ready to create release tag with: ./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh"
 }
 
 # Run main function

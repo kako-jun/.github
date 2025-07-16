@@ -180,7 +180,8 @@ main() {
     
     # Verify version consistency
     print_info "Verifying version consistency..."
-    if ! "$PROJECT_ROOT/scripts/release/03-check-local-versions.sh"; then
+    SHARED_SCRIPT_DIR="$(dirname "$SCRIPT_DIR")"
+    if ! "$SHARED_SCRIPT_DIR/release/03-check-local-versions.sh"; then
         print_error "Version consistency check failed"
         exit 1
     fi
@@ -188,7 +189,7 @@ main() {
     print_success "=== Pre-release Test Act 1 PASSED ==="
     print_info "All checks passed! Ready for Act 2 testing."
     echo ""
-    print_info "Next step: ./scripts/testing/pre-release-test-act2.sh"
+    print_info "Next step: ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh"
 }
 
 # Run main function
