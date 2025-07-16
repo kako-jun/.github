@@ -40,5 +40,6 @@ jobs:
         
     - name: Run CI tests
       run: |
+        # Stay in project root directory where Cargo.toml exists
         chmod +x ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
         ./.github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
