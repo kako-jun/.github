@@ -45,8 +45,42 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  wait-for-release:
+    needs: get-tag
+    runs-on: ubuntu-latest
+    outputs:
+      release-ready: ${{ steps.check.outputs.ready }}
+    steps:
+    - name: Wait for release creation
+      id: check
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG_NAME="${{ needs.get-tag.outputs.tag-name }}"
+        echo "Waiting for release $TAG_NAME to be fully created..."
+        
+        # Wait for release and all assets to be available
+        for i in {1..30}; do
+          echo "Attempt $i/30: Checking release assets..."
+          
+          # Check if release exists and has all expected assets
+          ASSETS=$(gh api repos/${{ github.repository }}/releases/tags/$TAG_NAME --jq '.assets | length' 2>/dev/null || echo "0")
+          
+          if [ "$ASSETS" -ge 5 ]; then
+            echo "Release $TAG_NAME is ready with $ASSETS assets"
+            echo "ready=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "Release not ready yet (found $ASSETS assets, need 5+), waiting 30s..."
+          sleep 30
+        done
+        
+        echo "Timeout waiting for release creation"
+        exit 1
+
   publish-npm:
-    needs: [get-tag, publish-pypi]
+    needs: [get-tag, publish-pypi, wait-for-release]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout project repository

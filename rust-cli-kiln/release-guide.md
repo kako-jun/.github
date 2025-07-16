@@ -72,11 +72,12 @@
 - GitHub Actionsの実行状況監視
 - 全プラットフォームでの公開完了確認
 
-### ステップ8: 公開パッケージ検証（オプション）
+### ステップ8: 公開パッケージ検証【必須】
 ```bash
 ./github-shared/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
 ```
 - npm、PyPI公開パッケージの動作確認
+- **重要**: パッケージ配布の問題を検出するため必須実行
 - 実環境でのインストール・動作テスト
 - クロスプラットフォーム互換性確認
 - **失敗してもリリースは有効（品質保証目的）**
@@ -108,7 +109,7 @@
 # ステップ7: 監視
 ./github-shared/rust-cli-kiln/scripts/release/07-monitor-release.sh vX.Y.Z
 
-# ステップ8: 公開パッケージ検証（オプション）
+# ステップ8: 公開パッケージ検証【必須】
 ./github-shared/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
 ```
 
