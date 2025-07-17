@@ -9,7 +9,7 @@ set -eo pipefail
 
 # Load common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/../../../utils/common.sh"
+source "$SCRIPT_DIR/../../utils/common.sh"
 source "$SCRIPT_DIR/test-utils.sh"
 
 # Initialize project variables

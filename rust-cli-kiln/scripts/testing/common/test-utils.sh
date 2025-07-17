@@ -79,9 +79,9 @@ print_test_summary() {
 # Create temporary test directory
 create_test_dir() {
     local prefix="${1:-test}"
-    TEMP_DIR=$(mktemp -d -t "${prefix}-XXXXXX")
-    trap "rm -rf $TEMP_DIR" EXIT
-    echo "$TEMP_DIR"
+    local temp_dir=$(mktemp -d -t "${prefix}-XXXXXX")
+    # Don't set trap here - let the calling script handle cleanup
+    echo "$temp_dir"
 }
 
 # Check if command exists

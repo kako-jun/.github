@@ -201,6 +201,7 @@ AIが「リリースして」と言われた時：
 **Claude Code実行時のタイムアウト設定：**
 - **04-pre-release-test-act1.sh**: 10分（600000ms）
 - **05-pre-release-test-act2.sh**: 10分（600000ms）
+- **08-test-published-packages.sh**: 10分（600000ms）
 - **quick-check.sh**: 5分（300000ms）
 - **通常のスクリプト**: 2分（120000ms）
 
