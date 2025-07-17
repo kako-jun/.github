@@ -53,17 +53,23 @@ test_python_package() {
         fi
         PACKAGE_NAME="${PROJECT_NAME}-python"
     else
-        # For local test, install from path
-        if [ -z "$PACKAGE_PATH" ] || [ ! -d "$PACKAGE_PATH" ]; then
-            error "Package path not found: $PACKAGE_PATH"
-            return 1
+        # For local test, check if wheel already installed in current environment
+        if python3 -c "import ${PROJECT_NAME//-/_}_python" >/dev/null 2>&1; then
+            info "${PROJECT_NAME}-python already installed in current environment"
+            PACKAGE_NAME="${PROJECT_NAME}-python"
+        else
+            # Install from local path
+            if [ -z "$PACKAGE_PATH" ] || [ ! -d "$PACKAGE_PATH" ]; then
+                error "Package path not found: $PACKAGE_PATH"
+                return 1
+            fi
+            info "Installing ${PROJECT_NAME}-python from local path..."
+            if ! uv pip install -e "$PACKAGE_PATH" >/dev/null 2>&1; then
+                error "Failed to install from local path: $PACKAGE_PATH"
+                return 1
+            fi
+            PACKAGE_NAME="${PROJECT_NAME}-python"
         fi
-        info "Installing ${PROJECT_NAME}-python from local path..."
-        if ! uv pip install -e "$PACKAGE_PATH" >/dev/null 2>&1; then
-            error "Failed to install from local path: $PACKAGE_PATH"
-            return 1
-        fi
-        PACKAGE_NAME="${PROJECT_NAME}-python"
     fi
     
     # Test 1: CLI functionality
@@ -87,25 +93,13 @@ import subprocess
 def test_import():
     """Test importing the Python module"""
     try:
-        # Try different possible module names
-        module_names = [
-            '${PROJECT_NAME//-/_}_core',
-            '${PROJECT_NAME//-/_}',
-            '${PROJECT_NAME//[^a-zA-Z0-9]/_}'
-        ]
-        
-        imported_module = None
-        for module_name in module_names:
-            try:
-                exec(f'import {module_name}')
-                imported_module = module_name
-                print(f"✓ Successfully imported {module_name}")
-                break
-            except ImportError:
-                continue
-        
-        if not imported_module:
-            print("✗ Failed to import any module variant")
+        # Import the Python module (diffai-python package -> diffai_python module)
+        module_name = '${PROJECT_NAME//-/_}_python'
+        try:
+            exec(f'import {module_name}')
+            print(f"✓ Successfully imported {module_name}")
+        except ImportError as e:
+            print(f"✗ Failed to import {module_name}: {e}")
             return False
             
         return True
@@ -134,17 +128,28 @@ def test_cli_via_subprocess():
 def test_basic_functionality():
     """Test basic Python API functionality"""
     try:
-        # Test file comparison
+        # Test CLI via subprocess
         result = subprocess.run(
             ['${PROJECT_NAME}', 'file1.json', 'file2.json'],
             capture_output=True,
             text=True,
             check=True
         )
-        print("✓ Basic diff functionality works")
+        print("✓ CLI diff functionality works")
+        
+        # Test Python API function call
+        module_name = '${PROJECT_NAME//-/_}_python'
+        exec(f'''
+import {module_name}
+result = {module_name}.diff("file1.json", "file2.json")
+print(f"✓ Python API diff function works: {{type(result)}}")
+''')
         return True
     except subprocess.CalledProcessError as e:
-        print(f"✗ Basic functionality test failed: {e}")
+        print(f"✗ CLI functionality test failed: {e}")
+        return False
+    except Exception as e:
+        print(f"✗ Python API test failed: {e}")
         return False
 
 def main():

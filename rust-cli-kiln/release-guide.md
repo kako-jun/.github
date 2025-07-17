@@ -59,6 +59,8 @@ source .venv/bin/activate && uv pip install maturin wheel build twine
 - **バージョン更新後のdiffがある状態で実行（正常）**
 - **実際の公開はGitHub Actionsでのみ実行**
 - **Act1成功後のみ実行**
+- **⚠️ 注意**: このスクリプトはmaturinビルドとパッケージテストで時間がかかる（5-10分）
+- **Claude実行時**: タイムアウトを10分（600000ms）に設定して実行
 
 ### ステップ6: リリースタグ作成
 ```bash
@@ -194,6 +196,13 @@ AIが「リリースして」と言われた時：
   - Python: PyPI削除指示（手動）
 
 ## 🎯 AI向け自動実行ルール
+
+### タイムアウト設定
+**Claude Code実行時のタイムアウト設定：**
+- **04-pre-release-test-act1.sh**: 10分（600000ms）
+- **05-pre-release-test-act2.sh**: 10分（600000ms）
+- **quick-check.sh**: 5分（300000ms）
+- **通常のスクリプト**: 2分（120000ms）
 
 ### GitHub操作について
 **AIは以下のいずれかの方法でGitHub操作を実行：**
