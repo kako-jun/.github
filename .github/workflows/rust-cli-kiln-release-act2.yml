@@ -79,47 +79,9 @@ jobs:
         echo "Timeout waiting for release creation"
         exit 1
 
-  publish-npm:
-    needs: [get-tag, publish-pypi, wait-for-release]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout project repository
-      uses: actions/checkout@v4
-      
-    - name: Checkout shared repository
-      uses: actions/checkout@v4
-      with:
-        repository: kako-jun/.github
-        path: github-shared
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        registry-url: 'https://registry.npmjs.org'
-    
-    - name: Run pre-release tests for npm
-      run: |
-        chmod +x ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
-        ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
-    
-    - name: Download all platform binaries for npm package
-      working-directory: ${{ env.PROJECT_NAME }}-npm
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        TAG_NAME="${{ needs.get-tag.outputs.tag-name }}"
-        node scripts/download-all-binaries.js
-    
-    - name: Publish to npm
-      working-directory: ${{ env.PROJECT_NAME }}-npm
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: npm publish
-
-  publish-pypi:
-    needs: get-tag
-    timeout-minutes: 10
+  publish-packages:
+    needs: [get-tag, wait-for-release]
+    timeout-minutes: 15
     strategy:
       matrix:
         include:
@@ -172,3 +134,41 @@ jobs:
       run: |
         pip install maturin
         maturin upload --skip-existing dist/*
+
+  publish-npm:
+    needs: [get-tag, publish-packages, wait-for-release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout project repository
+      uses: actions/checkout@v4
+      
+    - name: Checkout shared repository
+      uses: actions/checkout@v4
+      with:
+        repository: kako-jun/.github
+        path: github-shared
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        registry-url: 'https://registry.npmjs.org'
+    
+    - name: Run pre-release tests for npm
+      run: |
+        chmod +x ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
+        ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
+    
+    - name: Download all platform binaries for npm package
+      working-directory: ${{ env.PROJECT_NAME }}-npm
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG_NAME="${{ needs.get-tag.outputs.tag-name }}"
+        node scripts/download-all-binaries.js
+    
+    - name: Publish to npm
+      working-directory: ${{ env.PROJECT_NAME }}-npm
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: npm publish
