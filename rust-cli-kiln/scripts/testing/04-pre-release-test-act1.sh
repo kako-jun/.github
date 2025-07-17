@@ -16,10 +16,26 @@ init_project_vars
 export CARGO_TERM_COLOR=always
 export RUST_BACKTRACE=1
 
+cleanup_workspace() {
+    # Clean up any workspace pollution
+    info "Cleaning up workspace configuration..."
+    # Remove test directory entries completely
+    sed -i '/target\/.*tmp-crate-test/d' "${PROJECT_ROOT}/Cargo.toml"
+    # Remove any malformed entries that might have been added
+    sed -i '/^    "target\//d' "${PROJECT_ROOT}/Cargo.toml"
+    # Replace whatever is after "diffai-cli" with ] and empty line
+    sed -i '/^    "diffai-cli"$/{ N; s/.*/    "diffai-cli"\n]\n/ }' "${PROJECT_ROOT}/Cargo.toml"
+    # Restore "target/" after ".github/"
+    sed -i '/^    "\.github\/",$/a\    "target/"' "${PROJECT_ROOT}/Cargo.toml"
+}
+
 main() {
     info "=== Pre-release Test Act 1 - Core Build and Rust Ecosystem Testing ==="
     info "This builds and tests the Rust workspace with comprehensive validation"
     echo ""
+    
+    # Set up cleanup on exit
+    trap cleanup_workspace EXIT
     
     # Step 1: Install required targets
     info "Step 1: Installing required Rust targets..."

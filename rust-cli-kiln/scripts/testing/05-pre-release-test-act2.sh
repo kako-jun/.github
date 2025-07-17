@@ -41,7 +41,10 @@ check_prerequisites() {
         source .venv/bin/activate
     fi
     
-    if ! check_command "maturin"; then
+    # Skip maturin check for npm-only workflows
+    if [[ "${SKIP_PYTHON_TESTS:-}" == "true" ]]; then
+        warning "Skipping maturin check for npm-only workflow"
+    elif ! check_command "maturin"; then
         error "maturin is not installed. This is a FAILURE condition for releases."
         error "Install maturin: source .venv/bin/activate && uv pip install maturin"
         exit 1
@@ -143,27 +146,22 @@ build_python_package() {
     LOCAL_TARGET=$(rustc -vV | grep host | cut -d' ' -f2)
     info "Building wheel for target: $LOCAL_TARGET"
     
-    # Build with error tolerance for local testing
-    if ! maturin build --release --target "$LOCAL_TARGET" --out dist 2>&1 | tee build.log; then
-        # Check if failure is due to manylinux compatibility
-        if grep -q "manylinux.*compliance" build.log; then
-            warning "manylinux compatibility error (expected in local environment)"
-            warning "This will work in GitHub Actions with manylinux container"
-            
-            # Try building with relaxed compatibility
-            info "Attempting build with local compatibility..."
-            if ! maturin build --release --target "$LOCAL_TARGET" --out dist --compatibility linux; then
-                error "maturin build failed even with relaxed compatibility"
-                exit 1
-            fi
-        else
-            error "maturin build failed with non-manylinux error"
-            cat build.log
-            exit 1
-        fi
+    # Determine compatibility based on environment
+    COMPATIBILITY=""
+    if [[ -z "${GITHUB_ACTIONS:-}" ]]; then
+        # Local environment - use linux compatibility
+        COMPATIBILITY="--compatibility linux"
+        info "Local environment detected, using linux compatibility"
+    else
+        # GitHub Actions - use manylinux
+        info "GitHub Actions environment detected, using manylinux compatibility"
     fi
     
-    rm -f build.log
+    # Build wheel with appropriate compatibility
+    if ! maturin build --release --target "$LOCAL_TARGET" --out dist $COMPATIBILITY; then
+        error "maturin build failed"
+        exit 1
+    fi
     
     # Verify wheel was created
     if [ ! -d "dist" ] || [ -z "$(ls -A dist)" ]; then
@@ -192,7 +190,11 @@ main() {
     
     # Build packages to prepare for testing
     build_npm_package
-    build_python_package
+    
+    # Skip Python testing for npm-only workflows
+    if [[ "${SKIP_PYTHON_TESTS:-}" != "true" ]]; then
+        build_python_package
+    fi
     
     # Test npm package using common framework
     info "=== Testing npm package functionality ==="
@@ -221,7 +223,8 @@ main() {
     "$SCRIPT_DIR/common/test-npm-package.sh" local "$PWD/${PROJECT_NAME}-npm"
     
     # Test Python package using common framework
-    info "=== Testing Python package functionality ==="
+    if [[ "${SKIP_PYTHON_TESTS:-}" != "true" ]]; then
+        info "=== Testing Python package functionality ==="
     
     # Install the wheel file we just built for testing
     info "Installing built Python wheel for testing..."
@@ -235,7 +238,10 @@ main() {
         warning "No wheel file found, Python tests may fail"
     fi
     
-    "$SCRIPT_DIR/common/test-python-package.sh" local "${PROJECT_NAME}-python"
+        "$SCRIPT_DIR/common/test-python-package.sh" local "${PROJECT_NAME}-python"
+    else
+        warning "Python tests skipped for npm-only workflow"
+    fi
     
     success "=== Pre-release Test Act 2 PASSED ==="
     info "All wrapper package tests passed!"

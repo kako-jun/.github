@@ -30,6 +30,16 @@ test_rust_crate() {
     # Initialize cargo project
     cargo init --name test-project >/dev/null 2>&1
     
+    # Create basic Cargo.toml
+    cat > Cargo.toml << 'EOF'
+[package]
+name = "test-project"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+EOF
+    
     # Add crate dependency
     if is_published_test "$SOURCE_TYPE"; then
         info "Adding ${PROJECT_NAME}-core from crates.io..."
