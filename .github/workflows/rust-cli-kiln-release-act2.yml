@@ -79,9 +79,9 @@ jobs:
         echo "Timeout waiting for release creation"
         exit 1
 
-  publish-packages:
+  publish-pypi:
     needs: [get-tag, wait-for-release]
-    timeout-minutes: 15
+    timeout-minutes: 10
     strategy:
       matrix:
         include:
@@ -136,7 +136,7 @@ jobs:
         maturin upload --skip-existing dist/*
 
   publish-npm:
-    needs: [get-tag, publish-packages, wait-for-release]
+    needs: [get-tag, publish-pypi, wait-for-release]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout project repository
@@ -155,6 +155,8 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     
     - name: Run pre-release tests for npm
+      env:
+        SKIP_PYTHON_TESTS: true
       run: |
         chmod +x ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
         ./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh

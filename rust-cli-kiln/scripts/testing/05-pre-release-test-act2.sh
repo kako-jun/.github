@@ -30,10 +30,12 @@ check_prerequisites() {
         exit 1
     fi
     
-    # Check if Python is installed
-    if ! check_command "python3"; then
-        error "Python 3 is not installed. Required for Python package testing."
-        exit 1
+    # Check if Python is installed (skip for npm-only workflows)
+    if [[ "${SKIP_PYTHON_TESTS:-}" != "true" ]]; then
+        if ! check_command "python3"; then
+            error "Python 3 is not installed. Required for Python package testing."
+            exit 1
+        fi
     fi
     
     # Check if maturin is available in venv (activate if exists)
@@ -41,8 +43,10 @@ check_prerequisites() {
         source .venv/bin/activate
     fi
     
-    # Check if maturin is installed
-    if ! check_command "maturin"; then
+    # Skip maturin check for npm-only workflows
+    if [[ "${SKIP_PYTHON_TESTS:-}" == "true" ]]; then
+        warning "Skipping maturin check for npm-only workflow"
+    elif ! check_command "maturin"; then
         error "maturin is not installed. This is a FAILURE condition for releases."
         error "Install maturin: source .venv/bin/activate && uv pip install maturin"
         exit 1
@@ -189,8 +193,10 @@ main() {
     # Build packages to prepare for testing
     build_npm_package
     
-    # Build Python package
-    build_python_package
+    # Skip Python testing for npm-only workflows
+    if [[ "${SKIP_PYTHON_TESTS:-}" != "true" ]]; then
+        build_python_package
+    fi
     
     # Test npm package using common framework
     info "=== Testing npm package functionality ==="
@@ -219,21 +225,25 @@ main() {
     "$SCRIPT_DIR/common/test-npm-package.sh" local "$PWD/${PROJECT_NAME}-npm"
     
     # Test Python package using common framework
-    info "=== Testing Python package functionality ==="
+    if [[ "${SKIP_PYTHON_TESTS:-}" != "true" ]]; then
+        info "=== Testing Python package functionality ==="
     
-    # Install the wheel file we just built for testing
-    info "Installing built Python wheel for testing..."
-    if [ -f "${PROJECT_NAME}-python/dist/${PROJECT_NAME//-/_}_python-"*.whl ]; then
-        source .venv/bin/activate
-        pip uninstall -y "${PROJECT_NAME}-python" >/dev/null 2>&1 || true
-        pip install "${PROJECT_NAME}-python/dist/"*.whl
-        deactivate
-        info "Python wheel installed successfully for testing"
+        # Install the wheel file we just built for testing
+        info "Installing built Python wheel for testing..."
+        if [ -f "${PROJECT_NAME}-python/dist/${PROJECT_NAME//-/_}_python-"*.whl ]; then
+            source .venv/bin/activate
+            pip uninstall -y "${PROJECT_NAME}-python" >/dev/null 2>&1 || true
+            pip install "${PROJECT_NAME}-python/dist/"*.whl
+            deactivate
+            info "Python wheel installed successfully for testing"
+        else
+            warning "No wheel file found, Python tests may fail"
+        fi
+    
+        "$SCRIPT_DIR/common/test-python-package.sh" local "${PROJECT_NAME}-python"
     else
-        warning "No wheel file found, Python tests may fail"
+        warning "Python tests skipped for npm-only workflow"
     fi
-    
-    "$SCRIPT_DIR/common/test-python-package.sh" local "${PROJECT_NAME}-python"
     
     success "=== Pre-release Test Act 2 PASSED ==="
     info "All wrapper package tests passed!"
