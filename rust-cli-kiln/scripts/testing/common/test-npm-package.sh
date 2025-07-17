@@ -104,7 +104,7 @@ async function runTests() {
     
     // Test 4: Test diffString function
     try {
-        const result = await diffString('{"a": 1}', '{"a": 2}', {});
+        const result = await diffString('{"a": 1}', '{"a": 2}', 'json', { output: 'json' });
         console.log('✓ DiffString function works');
         console.log(`Found ${result.length} differences`);
     } catch (error) {

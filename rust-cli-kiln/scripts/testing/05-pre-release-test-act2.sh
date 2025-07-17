@@ -209,7 +209,7 @@ main() {
             *) PLATFORM_DIR="linux-x64" ;; # fallback
         esac
         
-        NPM_BIN_DIR="${PROJECT_NAME}-js/bin/$PLATFORM_DIR"
+        NPM_BIN_DIR="${PROJECT_NAME}-npm/bin/$PLATFORM_DIR"
         mkdir -p "$NPM_BIN_DIR"
         cp "target/release/${PROJECT_NAME}" "$NPM_BIN_DIR/${PROJECT_NAME}"
         chmod +x "$NPM_BIN_DIR/${PROJECT_NAME}"
@@ -218,7 +218,7 @@ main() {
         warning "No release binary found, npm tests may fail"
     fi
     
-    "$SCRIPT_DIR/common/test-npm-package.sh" local "${PROJECT_NAME}-js"
+    "$SCRIPT_DIR/common/test-npm-package.sh" local "$PWD/${PROJECT_NAME}-npm"
     
     # Test Python package using common framework
     info "=== Testing Python package functionality ==="

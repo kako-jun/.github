@@ -44,13 +44,21 @@ run_test() {
     TESTS_RUN=$((TESTS_RUN + 1))
     info "Running: $test_name"
     
-    if eval "$test_command" >/dev/null 2>&1; then
+    # Create temp file for error output
+    local error_file=$(mktemp)
+    
+    if eval "$test_command" >/dev/null 2>"$error_file"; then
         TESTS_PASSED=$((TESTS_PASSED + 1))
         success "$test_name"
+        rm -f "$error_file"
         return 0
     else
         TESTS_FAILED=$((TESTS_FAILED + 1))
         error "$test_name"
+        if [ -s "$error_file" ]; then
+            error "Error details: $(cat "$error_file")"
+        fi
+        rm -f "$error_file"
         return 1
     fi
 }
@@ -79,7 +87,9 @@ print_test_summary() {
 # Create temporary test directory
 create_test_dir() {
     local prefix="${1:-test}"
-    local temp_dir=$(mktemp -d -t "${prefix}-XXXXXX")
+    # Create temp directory in target/ to avoid workspace issues
+    local temp_dir="${PROJECT_ROOT}/target/tmp-${prefix}-$$-$(date +%s)"
+    mkdir -p "$temp_dir"
     # Don't set trap here - let the calling script handle cleanup
     echo "$temp_dir"
 }

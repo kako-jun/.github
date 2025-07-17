@@ -65,7 +65,7 @@ fn main() {
     assert!(!result.is_empty(), "Should find differences");
     
     // Test 2: Enhanced diff function (if available)
-    let result2 = ${PROJECT_NAME//-/_}_core::diff(&v1, &v2, true, false, false);
+    let result2 = ${PROJECT_NAME//-/_}_core::diff(&v1, &v2, None, None, None);
     println!("Enhanced diff found {} differences", result2.len());
     assert!(!result2.is_empty(), "Should find differences");
     

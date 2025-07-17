@@ -76,11 +76,12 @@ test_rust_binary() {
     
     # Test 7: ML model support (if applicable)
     if [[ "${PROJECT_NAME}" == *"diffai"* ]] || [[ "${PROJECT_NAME}" == *"ml"* ]]; then
-        # Create dummy model files
-        echo "dummy pytorch model" > model1.pt
-        echo "dummy pytorch model v2" > model2.pt
-        
-        run_test "ML model diff" "$BINARY_CMD model1.pt model2.pt"
+        # Use actual test fixtures for ML models
+        if [[ -f "tests/fixtures/ml_models/simple_base.pt" ]] && [[ -f "tests/fixtures/ml_models/simple_modified.pt" ]]; then
+            run_test "ML model diff" "$BINARY_CMD tests/fixtures/ml_models/simple_base.pt tests/fixtures/ml_models/simple_modified.pt"
+        else
+            echo "[INFO] ML model test skipped - test fixtures not found"
+        fi
     fi
     
     # Test 8: Directory comparison

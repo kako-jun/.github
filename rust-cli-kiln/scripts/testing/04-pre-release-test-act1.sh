@@ -60,7 +60,7 @@ main() {
     
     # Step 4: Test built binary using common framework
     info "Step 4: Testing built binary functionality..."
-    BINARY_PATH="target/$LOCAL_TARGET/release/${PROJECT_NAME}"
+    BINARY_PATH="${PROJECT_ROOT}/target/$LOCAL_TARGET/release/${PROJECT_NAME}"
     if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
         BINARY_PATH="$BINARY_PATH.exe"
     fi
@@ -71,11 +71,17 @@ main() {
     fi
     
     # Use common test framework
-    "$SCRIPT_DIR/common/test-rust-binary.sh" local "$BINARY_PATH"
+    if ! "$SCRIPT_DIR/common/test-rust-binary.sh" local "$BINARY_PATH"; then
+        error "Binary functionality test failed"
+        exit 1
+    fi
     
     # Step 5: Test core crate using common framework
     info "Step 5: Testing core crate functionality..."
-    "$SCRIPT_DIR/common/test-rust-crate.sh" local "${PROJECT_NAME}-core"
+    if ! "$SCRIPT_DIR/common/test-rust-crate.sh" local "${PROJECT_ROOT}/${PROJECT_NAME}-core"; then
+        error "Core crate functionality test failed"
+        exit 1
+    fi
     
     # Step 6: Simulate crates.io publish (dry run only)
     info "Step 6: Simulating crates.io publish (dry run only)..."
