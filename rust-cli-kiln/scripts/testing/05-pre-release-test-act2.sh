@@ -246,6 +246,8 @@ main() {
             warning "No wheel file found, Python tests may fail"
         fi
     
+        # Export binary path for Python tests
+        export TEST_BINARY_PATH="$PWD/target/release/${PROJECT_NAME}"
         "$SCRIPT_DIR/common/test-python-package.sh" local "${PROJECT_NAME}-python"
     else
         warning "Python tests skipped for npm-only workflow"

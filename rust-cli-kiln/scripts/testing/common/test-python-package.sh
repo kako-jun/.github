@@ -36,6 +36,11 @@ test_python_package() {
         source ~/.cargo/env
     fi
     
+    # Convert PACKAGE_PATH to absolute path before changing directory
+    if [ -n "$PACKAGE_PATH" ] && [ -d "$PACKAGE_PATH" ]; then
+        PACKAGE_PATH="$(cd "$PACKAGE_PATH" && pwd)"
+    fi
+    
     # Create test environment
     local test_dir=$(create_test_dir "python-test")
     cd "$test_dir"
@@ -72,16 +77,25 @@ test_python_package() {
         fi
     fi
     
+    # Determine CLI command to use
+    if [ -n "${TEST_BINARY_PATH:-}" ] && [ -f "${TEST_BINARY_PATH}" ]; then
+        # Use provided binary path (for local testing)
+        CLI_CMD="${TEST_BINARY_PATH}"
+    else
+        # Use command from PATH (for published testing)
+        CLI_CMD="${PROJECT_NAME}"
+    fi
+    
     # Test 1: CLI functionality
-    run_test "CLI version command" "${PROJECT_NAME} --version"
-    run_test "CLI help command" "${PROJECT_NAME} --help"
+    run_test "CLI version command" "${CLI_CMD} --version"
+    run_test "CLI help command" "${CLI_CMD} --help"
     
     # Test 2: Create test files and run CLI
     echo '{"name": "test", "value": 1}' > file1.json
     echo '{"name": "test", "value": 2}' > file2.json
     
-    run_test "CLI diff functionality" "${PROJECT_NAME} file1.json file2.json"
-    run_test "CLI JSON output" "${PROJECT_NAME} file1.json file2.json --output json"
+    run_test "CLI diff functionality" "${CLI_CMD} file1.json file2.json"
+    run_test "CLI JSON output" "${CLI_CMD} file1.json file2.json --output json"
     
     # Test 3: Python module import and basic usage
     cat > test_import.py << EOF
@@ -111,7 +125,7 @@ def test_cli_via_subprocess():
     """Test CLI via subprocess"""
     try:
         result = subprocess.run(
-            ['${PROJECT_NAME}', '--version'], 
+            ['${CLI_CMD}', '--version'], 
             capture_output=True, 
             text=True, 
             check=True
@@ -130,7 +144,7 @@ def test_basic_functionality():
     try:
         # Test CLI via subprocess
         result = subprocess.run(
-            ['${PROJECT_NAME}', 'file1.json', 'file2.json'],
+            ['${CLI_CMD}', 'file1.json', 'file2.json'],
             capture_output=True,
             text=True,
             check=True
