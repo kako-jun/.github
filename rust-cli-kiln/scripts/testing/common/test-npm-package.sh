@@ -119,7 +119,12 @@ runTests().catch(console.error);
 EOF
     
     # Replace PACKAGE_NAME placeholder
-    sed -i "s/PACKAGE_NAME/${PACKAGE_NAME}/g" test-api.js
+    # Portable sed in-place replacement
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "s/PACKAGE_NAME/${PACKAGE_NAME}/g" test-api.js
+    else
+        sed -i "s/PACKAGE_NAME/${PACKAGE_NAME}/g" test-api.js
+    fi
     
     run_test "JavaScript API functionality" "node test-api.js"
     
