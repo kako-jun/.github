@@ -201,28 +201,34 @@ main() {
     # Test npm package using common framework
     info "=== Testing npm package functionality ==="
     
-    # For local testing, copy the built binary to npm package for testing
-    info "Preparing npm package for local testing..."
-    if [ -f "target/release/${PROJECT_NAME}" ]; then
-        LOCAL_TARGET=$(rustc -vV | grep host | cut -d' ' -f2)
-        case "$LOCAL_TARGET" in
-            x86_64-unknown-linux-gnu) PLATFORM_DIR="linux-x64" ;;
-            x86_64-apple-darwin) PLATFORM_DIR="darwin-x64" ;;
-            aarch64-apple-darwin) PLATFORM_DIR="darwin-arm64" ;;
-            x86_64-pc-windows-gnu|x86_64-pc-windows-msvc) PLATFORM_DIR="win32-x64" ;;
-            *) PLATFORM_DIR="linux-x64" ;; # fallback
-        esac
-        
-        NPM_BIN_DIR="${PROJECT_NAME}-npm/bin/$PLATFORM_DIR"
-        mkdir -p "$NPM_BIN_DIR"
-        cp "target/release/${PROJECT_NAME}" "$NPM_BIN_DIR/${PROJECT_NAME}"
-        chmod +x "$NPM_BIN_DIR/${PROJECT_NAME}"
-        info "Binary copied to $NPM_BIN_DIR/${PROJECT_NAME} for local testing"
+    # Local testing only - GitHub Actions will test after downloading binaries
+    if [ -z "${GITHUB_ACTIONS:-}" ]; then
+        # Local testing: copy the built binary to npm package
+        if [ -f "target/release/${PROJECT_NAME}" ]; then
+            info "Preparing npm package for local testing..."
+            LOCAL_TARGET=$(rustc -vV | grep host | cut -d' ' -f2)
+            case "$LOCAL_TARGET" in
+                x86_64-unknown-linux-gnu) PLATFORM_DIR="linux-x64" ;;
+                x86_64-apple-darwin) PLATFORM_DIR="darwin-x64" ;;
+                aarch64-apple-darwin) PLATFORM_DIR="darwin-arm64" ;;
+                x86_64-pc-windows-gnu|x86_64-pc-windows-msvc) PLATFORM_DIR="win32-x64" ;;
+                *) PLATFORM_DIR="linux-x64" ;; # fallback
+            esac
+            
+            NPM_BIN_DIR="${PROJECT_NAME}-npm/bin/$PLATFORM_DIR"
+            mkdir -p "$NPM_BIN_DIR"
+            cp "target/release/${PROJECT_NAME}" "$NPM_BIN_DIR/${PROJECT_NAME}"
+            chmod +x "$NPM_BIN_DIR/${PROJECT_NAME}"
+            info "Binary copied to $NPM_BIN_DIR/${PROJECT_NAME} for local testing"
+            
+            "$SCRIPT_DIR/common/test-npm-package.sh" local "$PWD/${PROJECT_NAME}-npm"
+        else
+            error "No release binary found for local testing"
+            exit 1
+        fi
     else
-        warning "No release binary found, npm tests may fail"
+        info "Skipping npm pre-release tests in GitHub Actions (will test after binary download)"
     fi
-    
-    "$SCRIPT_DIR/common/test-npm-package.sh" local "$PWD/${PROJECT_NAME}-npm"
     
     # Test Python package using common framework
     if [[ "${SKIP_PYTHON_TESTS:-}" != "true" ]]; then
