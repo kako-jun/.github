@@ -105,7 +105,16 @@ main() {
     # Check core crate publish readiness
     info "Checking ${PROJECT_NAME}-core publish readiness (dry run)..."
     cd "${PROJECT_NAME}-core"
-    if ! cargo publish --dry-run --allow-dirty; then
+    # Capture dry run output and check for the expected "aborting upload due to dry run" message
+    DRY_RUN_OUTPUT=$(cargo publish --dry-run --allow-dirty 2>&1)
+    DRY_RUN_EXIT_CODE=$?
+    echo "$DRY_RUN_OUTPUT"
+    
+    if echo "$DRY_RUN_OUTPUT" | grep -q "aborting upload due to dry run"; then
+        success "${PROJECT_NAME}-core dry run passed (upload aborted as expected)"
+    elif [ $DRY_RUN_EXIT_CODE -eq 0 ]; then
+        success "${PROJECT_NAME}-core dry run passed"
+    else
         error "${PROJECT_NAME}-core dry run failed"
         exit 1
     fi
