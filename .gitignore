@@ -1,0 +1,11 @@
+# Claude Code local settings - should never be committed
+.claude/settings.local.json
+
+# Temporary test files
+test*.json
+
+# Local development files
+*.local.*
+*.tmp
+.DS_Store
+.vscode/settings.json
