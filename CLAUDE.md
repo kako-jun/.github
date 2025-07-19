@@ -11,6 +11,9 @@
   - [現在課題分析](./rust-cli-kiln/current-issues-analysis.md) - 識別された課題と対策
   - [テスト網羅分析](./rust-cli-kiln/test-coverage-analysis.md) - テスト完全網羅率達成記録
   - [リリースガイド](./rust-cli-kiln/release-guide.md) - 統合リリースプロセス
+  - [包括的マトリクス管理](./rust-cli-kiln/comprehensive-matrix-management.md) - 多次元進捗管理システム
+  - [統合開発タスク管理](./rust-cli-kiln/tasks.md) - 包括的作業計画・進捗記録
+  - [テスト組織化原則](./rust-cli-kiln/test-organization-principles.md) - 3プロジェクト統一ルール
 
 ### 🔧 **自動化スクリプト**
 - [`rust-cli-kiln/scripts/`](./rust-cli-kiln/scripts/) - 開発・テスト・リリース自動化
