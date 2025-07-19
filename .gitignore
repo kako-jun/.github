@@ -1,8 +1,9 @@
 # Claude Code local settings - should never be committed
 .claude/settings.local.json
 
-# Temporary test files
-test*.json
+# Temporary test files (should be in proper test directories)
+/test*.json
+**/test*.json
 
 # Local development files
 *.local.*
