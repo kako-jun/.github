@@ -3,9 +3,9 @@
 ## 🎯 基本原則
 
 ### 1. **分類表現方法の統一**
-- **Rust**: サブフォルダで分類表現 (`tests/basic/`, `tests/cli/`, `tests/unit/`, `tests/integration/`, `tests/features/`, `tests/formats/`, `tests/errors/`, `tests/docs_examples/`)
-- **pip (Python)**: **サブフォルダで分類表現** (`tests/basic/`, `tests/cli/`, `tests/unit/`, `tests/integration/`, `tests/features/`, `tests/formats/`, `tests/errors/`, `tests/docs_examples/`)
-- **npm (Node.js)**: **サブフォルダで分類表現** (`tests/basic/`, `tests/cli/`, `tests/unit/`, `tests/integration/`, `tests/features/`, `tests/formats/`, `tests/errors/`, `tests/docs_examples/`)
+- **Rust**: サブフォルダで分類表現 (`tests/basic/`, `tests/cli/`, `tests/core/`, `tests/integration/`, `tests/features/`, `tests/formats/`, `tests/errors/`, `tests/docs_examples/`)
+- **pip (Python)**: **サブフォルダで分類表現** (`tests/basic/`, `tests/cli/`, `tests/core/`, `tests/integration/`, `tests/features/`, `tests/formats/`, `tests/errors/`, `tests/docs_examples/`)
+- **npm (Node.js)**: **サブフォルダで分類表現** (`tests/basic/`, `tests/cli/`, `tests/core/`, `tests/integration/`, `tests/features/`, `tests/formats/`, `tests/errors/`, `tests/docs_examples/`)
 
 ### 2. **機能同等性の原則**
 - npmとpipは言語が違うだけで、**Rustバイナリの機能をimportして呼び出す**点で同じ
@@ -25,7 +25,7 @@
 | 分類 | pip (Python) | npm (Node.js) | Rust (参照) | 目的 |
 |------|-------------|--------------|-------------|------|
 | **基本機能** | `tests/basic/test_*.py` | `tests/basic/*.test.js` | `tests/basic/*.rs` | 基本動作テスト |
-| **バイナリ連携** | `tests/unit/test_*.py` | `tests/unit/*.test.js` | `tests/unit/*.rs` | Rustバイナリとの連携テスト |
+| **コア機能・単体テスト** | `tests/core/test_*.py` | `tests/core/*.test.js` | `tests/core/*.rs` | コア機能・単体テスト |
 | **CLI機能** | `tests/cli/test_*.py` | `tests/cli/*.test.js` | `tests/cli/*.rs` | コマンドライン機能テスト |
 | **エラー処理** | `tests/errors/test_*.py` | `tests/errors/*.test.js` | `tests/errors/*.rs` | エラーハンドリングテスト |
 | **個別機能** | `tests/features/test_*.py` | `tests/features/*.test.js` | `tests/features/*.rs` | 固有機能テスト |
@@ -65,16 +65,16 @@
 ## 📊 目標状態
 
 ### **lawkit パッケージ**
-- **lawkit-python**: 8サブディレクトリ (`tests/basic/`, `tests/unit/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`) ✅サブフォルダ化完成済み
-- **lawkit-npm**: 8サブディレクトリ (`tests/basic/`, `tests/unit/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`) ✅サブフォルダ化完成済み
+- **lawkit-python**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`) ✅サブフォルダ化完成済み
+- **lawkit-npm**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`) ✅サブフォルダ化完成済み
 
 ### **diffai パッケージ**
-- **diffai-python**: 8サブディレクトリ (`tests/basic/`, `tests/unit/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
-- **diffai-npm**: 8サブディレクトリ (`tests/basic/`, `tests/unit/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
+- **diffai-python**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
+- **diffai-npm**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
 
 ### **diffx パッケージ**
-- **diffx-python**: 8サブディレクトリ (`tests/basic/`, `tests/unit/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
-- **diffx-npm**: 8サブディレクトリ (`tests/basic/`, `tests/unit/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
+- **diffx-python**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
+- **diffx-npm**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
 
 ## 🔄 継続的遵守
 
