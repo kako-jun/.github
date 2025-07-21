@@ -543,13 +543,22 @@
 
 ### Matrix 6 作業手順
 
-**Phase 1: 個別テスト実行・記録**
-1. **Rust CLI テスト実行**: 
+**Phase 1: 標準的テスト実行・記録（必須）**
+
+**🚨 重要原則**: 
+- すべてのテストは**標準的な方法**で実行すること（cargo test, npm test, python -m pytest）
+- 特定ファイルの直接実行は避ける（例: pytest tests/docs_examples/file.py は非推奨）
+- 各言語/ツールの標準的なテストディスカバリー機能を活用
+- 実行結果は必ず標準出力全体を確認（部分的な成功に惑わされない）
+
+1. **Rust CLI テスト実行（標準方法）**: 
    ```bash
    cd /home/kako-jun/repos/2025/{project}
-   cargo test {specific_test_file} --lib -- --nocapture
+   cargo test --lib -- --nocapture  # 全CLIテスト実行
+   # または特定ディレクトリ単位で実行
+   cargo test --test cli -- --nocapture
    ```
-2. **Rust Core テスト実行**: 
+2. **Rust Core テスト実行（標準方法）**: 
    ```bash
    # 重要：{project}-core/Cargo.tomlに以下の[[test]]セクション追加が必要
    # [[test]]
@@ -561,31 +570,33 @@
    # (他のテストファイルも同様に追加)
    
    cd /home/kako-jun/repos/2025/{project}/{project}-core
+   cargo test -- --nocapture  # 全Coreテスト実行（推奨）
+   # または個別テストファイル実行（[[test]]セクション必須）
    cargo test --test basic_diff -- --nocapture
-   cargo test --test advanced_options -- --nocapture
-   # 各テストファイルを個別実行する方式
    
    # ✅ 成功確認済み（diffx）: 全48テスト成功、[[test]]セクション追加により実行可能
    ```
-3. **pip package テスト実行** (**必ずuv仮想環境使用**):
+3. **pip package テスト実行（標準方法・uv仮想環境必須）**:
    ```bash
    cd /home/kako-jun/repos/2025/{project}/{project}-python
    uv venv test-env
    source test-env/bin/activate  # Linux/Mac
    uv pip install -e .
-   python -m pytest tests/docs_examples/ -v
+   python -m pytest -v  # 標準的なpytest実行（推奨）
+   # 特定ディレクトリのテストは避ける（例: tests/docs_examples/は非推奨）
    deactivate
    
    # ✅ 成功確認済み（diffx）: 
-   # - pyproject.toml でmodule-name = "diffx" に修正必要（"diffx_python" → "diffx"）
+   # - 標準pytest実行: test_integration.py + test_manual.py = 14テスト
+   # - 9/14テスト成功（64.3%）
+   # - pyproject.toml でmodule-name = "diffx" に修正必要
    # - DiffxError → DiffError 名前修正必要
-   # - 開発モード用バイナリパス自動検出機能実装済み
-   # - 全pip packageテストが正常実行
    ```
-4. **npm package テスト実行**:
+4. **npm package テスト実行（標準方法）**:
    ```bash
    cd /home/kako-jun/repos/2025/{project}/{project}-npm
-   npm test
+   npm test  # package.jsonで定義された標準テスト実行（必須）
+   # 個別テストファイルの直接実行は避ける
    
    # ✅ 成功確認済み（diffx）:
    # - Test 6 stdinテストでタイムアウト問題発生（重複実行が原因）
