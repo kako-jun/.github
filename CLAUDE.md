@@ -64,4 +64,13 @@
 
 ---
 
+## 🚨 CRITICAL GIT/BASH RULES - NEVER IGNORE
+
+- **ALWAYS use bash -c with directory change** to run commands in different directories: `bash -c "cd /path/to/project && git status"`
+- **NEVER create scripts for simple git operations** - use `bash -c "cd /path && git commit ..."` directly
+- **NEVER write wrapper scripts** when bash -c can handle the task in one command
+- **These rules are ABSOLUTE** and must NEVER be forgotten or ignored
+
+---
+
 📝 **最終更新**: Claude Code セッション - 3プロジェクト統合テスト完了時点
