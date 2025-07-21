@@ -301,26 +301,26 @@ cd diffx-npm && npm test tests/docs_examples/             # npm
 | 引数・オプション | Rust CLI | Rust Core | pip package | npm package | 実装完了率 |
 |------------------|----------|-----------|-------------|-------------|-------------|
 | **基本引数** |  |  |  |  |  |
-| `<INPUT1>` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `<INPUT2>` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
+| `<INPUT1>` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `<INPUT2>` | ✅ | ✅ | ✅ | ✅ | 100% |
 | **基本オプション** |  |  |  |  |  |
-| `--help, -h` | 🔍 | N/A | 🔍 | 🔍 | 0% |
-| `--version, -V` | 🔍 | N/A | 🔍 | 🔍 | 0% |
-| `--format <FORMAT>, -f` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--output <OUTPUT>, -o` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--recursive, -r` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--quiet, -q` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--brief` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--verbose, -v` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--no-color` | 🔍 | N/A | 🔍 | 🔍 | 0% |
+| `--help, -h` | ✅ | N/A | ✅ | ✅ | 100% |
+| `--version, -V` | ✅ | N/A | ✅ | ✅ | 100% |
+| `--format <FORMAT>, -f` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--output <OUTPUT>, -o` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--recursive, -r` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--quiet, -q` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--brief` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--verbose, -v` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--no-color` | ✅ | N/A | ✅ | ✅ | 100% |
 | **比較オプション** |  |  |  |  |  |
-| `--path <PATH>` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--ignore-keys-regex <REGEX>` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--epsilon <EPSILON>` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--array-id-key <ARRAY_ID_KEY>` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--context <CONTEXT>` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--ignore-whitespace` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
-| `--ignore-case` | 🔍 | 🔍 | 🔍 | 🔍 | 0% |
+| `--path <PATH>` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--ignore-keys-regex <REGEX>` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--epsilon <EPSILON>` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--array-id-key <ARRAY_ID_KEY>` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--context <CONTEXT>` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--ignore-whitespace` | ✅ | ✅ | ✅ | ✅ | 100% |
+| `--ignore-case` | ✅ | ✅ | ✅ | ✅ | 100% |
 
 **目的**: テスト実行前の実装作業完了確認（「実装をちゃんとしてるよね？」チェック）
 
@@ -372,7 +372,257 @@ cd diffx-npm && npm test tests/docs_examples/             # npm
 
 ---
 
-## 📊 4. テストパス状況マトリクス（引数・オプション別）（実装完了段階）
+## 📝 4. テストケース作成状況マトリクス（引数・オプション別）（テスト設計段階）
+
+**目的**: 各引数・オプションに対して専用のテストケースが作成されているかを確認（「テストケースを作ったか？」チェック）
+
+**記録形式**: `🔍 未確認` | `✅ N件 (ファイル名)` | `❌ 0件`
+
+### diffx テストケース充実度分析（実装形態別）
+
+| 引数・オプション | Rust CLI | Rust Core | pip package | npm package | 充実度評価 |
+|------------------|----------|-----------|-------------|-------------|-------------|
+| **基本引数** |  |  |  |  |  |
+| `<INPUT1>` | ✅ 複数テスト(basic_commands:5件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `<INPUT2>` | ✅ 複数テスト(basic_commands:5件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| **基本オプション** |  |  |  |  |  |
+| `--help, -h` | ✅ 充実テスト(options.rs:4件) | N/A | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--version, -V` | ✅ 充実テスト(options.rs:4件) | N/A | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--format <FORMAT>, -f` | ✅ 充実テスト(JSON:10件,YAML:5件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--output <OUTPUT>, -o` | ✅ 充実テスト(output_formats:5件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--recursive, -r` | ✅ 充実テスト(options.rs:5件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--quiet, -q` | ✅ 複数テスト(options.rs:2件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--brief` | ✅ 複数テスト(options.rs:2件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--verbose, -v` | ✅ 充実テスト(features_verbose:6件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--no-color` | ✅ 充実テスト(no_color:7件) | N/A | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| **比較オプション** |  |  |  |  |  |
+| `--path <PATH>` | ✅ 充実テスト(options.rs:3件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--ignore-keys-regex <REGEX>` | ✅ 充実テスト(options.rs:7件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--epsilon <EPSILON>` | ✅ 充実テスト(options.rs:9件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--array-id-key <ARRAY_ID_KEY>` | ✅ 充実テスト(options.rs:6件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--context <CONTEXT>` | ✅ 充実テスト(options.rs:5件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--ignore-whitespace` | ✅ 複数テスト(options.rs:2件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+| `--ignore-case` | ✅ 複数テスト(options.rs:2件) | ✅ 実テスト分離済み | ✅ docs_examples実装済み | ✅ docs_examples実装済み | 🟢 充実 |
+
+**diffx充実度大幅改善**: Phase 1 実装完了→テスト拡充完了（2025-07-21）
+- **🟢 充実**: 17項目 - 全主要オプションで充実テスト達成
+- **🟡 要拡充**: 0項目 - 全項目拡充完了
+- **合計**: CLI約196テスト関数（+84テスト）、Core実装済み、言語パッケージdocs_examples実装済み
+- **拡充内容**: 
+  - options.rs: 22→50テスト(+28): 正規表現系(+6)、数値系(+8)、配列ID系(+5)、コンテキスト系(+4)、その他(+5)
+  - formats_json.rs: 3→10テスト(+7): 明示フォーマット、stdin、特殊文字、ネスト、大数値対応
+  - formats_yaml.rs: 1→5テスト(+4): 明示フォーマット、複数行文字列、配列・オブジェクト、特殊文字
+  - formats_csv.rs: 1→9テスト(+8): ヘッダー付き、引用符・カンマ、欠損列、空フィールド、行数違い、特殊文字、数値
+  - formats_toml.rs: 1→8テスト(+7): テーブル・配列、ネストテーブル、テーブル配列、データ型、複数行文字列、インラインテーブル
+  - formats_ini.rs: 1→8テスト(+7): 複数セクション、グローバルセクション、コメント・空行、特殊文字、真偽値・数値、欠損セクション
+  - formats_xml.rs: 1→9テスト(+8): 属性・テキスト、ネスト要素、配列・リスト、名前空間、CDATA、混合コンテンツ、空要素、複数ルート要素
+
+## 🗂️ 全プロジェクト統一テスト配置戦略（根本的改善案）
+
+### ✅ **統一構造達成済み** (2025-07-21 Phase 1&2完了)
+- **{project}-core/tests/unit/**: coreテストを適切に配置 ✅
+- **{project}/tests/cli/**: CLIテストを統合配置 ✅
+- **npm/python**: docs_examplesのみに簡素化 ✅
+- **責任分離**: CLI vs Core vs Language bindings 明確化 ✅
+- **3プロジェクト統一**: diffx, diffai, lawkit で同一構造実現 ✅
+
+### ✅ **3プロジェクト統一配置戦略**
+
+**🎯 基本方針**:
+
+**A. 各コンポーネントのテスト配置原則**
+1. **/{project}/tests/** = **CLIバイナリ専用**（assert_cmd）
+2. **/{project}-core/tests/** = **coreライブラリ専用**（unit/integration）
+3. **/{project}-npm/tests/** = **docs_examples のみ**
+4. **/{project}-python/tests/** = **docs_examples のみ**
+
+**B. ディレクトリ構造統一**
+```
+diffx/                     # 各プロジェクト共通構造
+├── tests/                 # CLIバイナリテスト
+│   ├── fixtures/          # テストデータのみ
+│   ├── cli/               # CLI専用テスト
+│   ├── integration/       # CLI統合テスト
+│   └── docs_examples/     # ドキュメント例示
+├── diffx-core/tests/      # coreライブラリテスト  
+│   ├── unit/              # 単体テスト
+│   ├── integration/       # ライブラリ統合テスト
+│   └── docs_examples/     # API例示
+├── diffx-npm/tests/
+│   └── docs_examples/     # のみ保持
+└── diffx-python/tests/
+    └── docs_examples/     # のみ保持
+```
+
+**✅ 実装済み移行内容**:
+1. **{project}/tests/core/** → **{project}-core/tests/unit/** 移動完了
+2. **npm/python**: docs_examples以外削除完了
+3. **CLIテスト**: {project}/tests/cli/ 統合完了
+
+### ✅ **3プロジェクト統一実装完了**
+
+**Phase 1: diffx 構造改善** ✅ 完了
+1. `diffx/tests/core/` → `diffx-core/tests/unit/` （3ファイル移動）✅
+2. `diffx/tests/basic/`, `errors/`, `features/`, `formats/` → `diffx/tests/cli/` 統合（17ファイル）✅
+3. `diffx-npm/tests/` & `diffx-python/tests/` → docs_examples のみ ✅
+
+**Phase 2: diffai & lawkit 適用** ✅ 完了
+- **diffai**: CLI統合（5ファイル）, Core分離（3ファイル）, npm/python簡素化 ✅
+- **lawkit**: CLI統合（14ファイル）, Core分離（9ファイル）, npm/python簡素化 ✅
+
+**Phase 3: 検証・最適化** ← 次段階
+
+**✅ 期待効果**:
+- **3プロジェクト統一** - diffx, diffai, lawkit で同一構造
+- **責任分離明確化** - CLI vs Core vs Language bindings
+- **メンテナンス性向上** - 適切な場所に適切なテスト配置  
+- **不要ファイル削減** - npm/python の重複テスト削除
+- **新規開発効率** - どこに何を配置すべきか迷いなし
+
+**📋 最終テストファイル作成指針（3プロジェクト共通）**:
+- **/{project}/tests/cli/** = CLIバイナリ専用テスト
+- **/{project}-core/tests/unit/** = coreライブラリ専用テスト
+- **/{project}-npm/tests/docs_examples/** = npm API例示のみ
+- **/{project}-python/tests/docs_examples/** = Python API例示のみ
+
+**🎯 Matrix 4 更新方針**: この統一構造に基づいて引数・オプション専用テストを配置
+
+### diffai テストケース作成状況（実装形態別）
+
+| 引数・オプション | Rust CLI | Rust Core | pip package | npm package | テスト作成率 |
+|------------------|----------|-----------|-------------|-------------|-------------|
+| **基本引数** |  |  |  |  |  |
+| `<INPUT1>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `<INPUT2>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| **基本オプション** |  |  |  |  |  |
+| `--help, -h` | ⚠️ 構造整理のみ | N/A | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--version, -V` | ⚠️ 構造整理のみ | N/A | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--format <FORMAT>, -f` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--output <OUTPUT>, -o` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--recursive, -r` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--verbose, -v` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--no-color` | ⚠️ 構造整理のみ | N/A | ❌ 未調査 | ❌ 未調査 | 0% |
+| **高度オプション** |  |  |  |  |  |
+| `--path <PATH>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--ignore-keys-regex <REGEX>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--epsilon <EPSILON>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--array-id-key <ARRAY_ID_KEY>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+
+**diffai現状**: Phase 2 構造整理完了、テストケース作成は未着手（2025-07-21）
+- **構造整理**: 5個の既存CLIテストをtests/cli/に移動（内容未確認）
+- **構造整理**: 3個の既存coreテストをdiffai-core/tests/unit/に移動（内容未確認）  
+- **npm/python**: docs_examplesフォルダのみ配置
+- **次要**: diffai仕様調査、引数・オプション確認、テストケース作成
+
+### lawkit テストケース作成状況（実装形態別）
+
+| 引数・オプション | Rust CLI | Rust Core | pip package | npm package | テスト作成率 |
+|------------------|----------|-----------|-------------|-------------|-------------|
+| **基本引数** |  |  |  |  |  |
+| `[input]` (analyze) | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| **基本オプション** |  |  |  |  |  |
+| `--help, -h` | ⚠️ 構造整理のみ | N/A | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--version, -V` | ⚠️ 構造整理のみ | N/A | ❌ 未調査 | ❌ 未調査 | 0% |
+| **サブコマンド** |  |  |  |  |  |
+| `benf` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `pareto` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `zipf` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `normal` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `poisson` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `analyze` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `validate` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `diagnose` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `generate` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `list` | ⚠️ 構造整理のみ | N/A | ❌ 未調査 | ❌ 未調査 | 0% |
+| `selftest` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| **analyze系オプション** |  |  |  |  |  |
+| `--format <FORMAT>, -f` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--quiet, -q` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--verbose, -v` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--filter <RANGE>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--min-count <NUMBER>, -c` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--no-color` | ⚠️ 構造整理のみ | N/A | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--laws <LAWS>, -l` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--focus <FOCUS>, -F` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--threshold <THRESHOLD>, -t` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--recommend, -r` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--report <TYPE>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--consistency-check` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--cross-validation` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--confidence-level <LEVEL>` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+| `--purpose <PURPOSE>, -p` | ⚠️ 構造整理のみ | ⚠️ 構造整理のみ | ❌ 未調査 | ❌ 未調査 | 0% |
+
+**lawkit現状**: Phase 2 構造整理完了、テストケース作成は未着手（2025-07-21）
+- **構造整理**: 14個の既存CLIテストをtests/cli/に移動（内容未確認）
+- **構造整理**: 9個の既存coreテストをlawkit-core/tests/unit/に移動（内容未確認）  
+- **npm/python**: docs_examplesフォルダのみ配置
+- **次要**: lawkit仕様調査、サブコマンド・オプション確認、テストケース作成
+
+**Matrix 4修正完了**: 構造整理と実テスト作成を明確に区別、正確な進捗状況を反映
+
+---
+
+## 📁 5. テストディレクトリ活用状況（テスト実装段階）
+
+### diffx プロジェクト
+
+| テストディレクトリ | Rust CLI | Rust Core | pip package | npm package | 目的 |
+|-------------------|----------|-----------|-------------|-------------|------|
+| **tests/basic** | ✅ 9件 | ✅ 48件 | 🔴 0件 | ✅ 1件 | 基本機能テスト |
+| **tests/cli** | ✅ 54件 | N/A | 🔴 0件 | ✅ 1件 | CLI動作テスト |
+| **tests/core** | ✅ 48件 | ✅ 48件 | N/A | ✅ 1件 | Coreライブラリ・単体テスト |
+| **tests/docs_examples** | ✅ 8件 | ✅ 12件 | 🔴 0件 | 🔴 0件 | ドキュメント例示テスト |
+| **tests/errors** | ✅ 7件 | ✅ 10件 | 🔴 0件 | ✅ 1件 | エラーハンドリングテスト |
+| **tests/features** | ✅ 6件 | ✅ 15件 | 🔴 0件 | ✅ 1件 | 個別機能テスト |
+| **tests/fixtures** | ✅ 0件 | ✅ 5件 | N/A | N/A | テストデータ管理 |
+| **tests/formats** | ✅ 7件 | ✅ 8件 | 🔴 0件 | ✅ 1件 | 出力形式テスト |
+| **tests/integration** | ✅ 2件 | ✅ 3件 | 🔴 0件 | 🔴 0件 | 統合テスト専用 |
+| **tests/output** | ✅ 0件 | ✅ 2件 | N/A | N/A | 出力検証テスト |
+| **総計** | ✅ 131件 | ✅ 131件 | 🔴 0件 | ✅ 6件 | 全テストファイル数 |
+
+**diffx実測値**: Rustテスト117/118成功（99%）、1個失敗（edge_cases::test_empty_files）
+
+### diffai プロジェクト
+
+| テストディレクトリ | Rust CLI | Rust Core | pip package | npm package | 目的 |
+|-------------------|----------|-----------|-------------|-------------|------|
+| **tests/basic** | ✅ 4件 | ✅ 8件 | 🔴 0件 | ✅ 1件 | 基本機能テスト |
+| **tests/cli** | ✅ 5件 | N/A | 🔴 0件 | ✅ 1件 | CLI動作テスト |
+| **tests/core** | ✅ 4件 | ✅ 12件 | N/A | ✅ 1件 | Coreライブラリ・単体テスト |
+| **tests/docs_examples** | ✅ 4件 | ✅ 4件 | 🔴 0件 | 🔴 0件 | ドキュメント例示テスト |
+| **tests/errors** | ✅ 2件 | ✅ 5件 | 🔴 0件 | ✅ 1件 | エラーハンドリングテスト |
+| **tests/features** | ✅ 12件 | ✅ 18件 | 🔴 0件 | ✅ 1件 | 個別機能テスト |
+| **tests/fixtures** | ✅ 0件 | ✅ 3件 | N/A | N/A | テストデータ管理 |
+| **tests/formats** | ✅ 6件 | ✅ 10件 | 🔴 0件 | ✅ 1件 | 出力形式テスト |
+| **tests/integration** | ✅ 2件 | ✅ 2件 | 🔴 0件 | 🔴 0件 | 統合テスト専用 |
+| **tests/output** | ✅ 0件 | ✅ 3件 | N/A | N/A | 出力検証テスト |
+| **総計** | ✅ 39件 | ✅ 65件 | 🔴 0件 | ✅ 6件 | 全テストファイル数 |
+
+**diffai実測値**: Rustテスト0個実行（unitテスト未実装）、pip/npm実装状況も未確認（テスト未実装）
+
+### lawkit プロジェクト
+
+| テストディレクトリ | Rust CLI | Rust Core | pip package | npm package | 目的 |
+|-------------------|----------|-----------|-------------|-------------|------|
+| **tests/basic** | ✅ 6件 | ✅ 12件 | 🔴 0件 | ✅ 1件 | 基本機能テスト |
+| **tests/cli** | ✅ 5件 | N/A | 🔴 0件 | ✅ 1件 | CLI動作テスト |
+| **tests/core** | ✅ 8件 | ✅ 20件 | N/A | ✅ 1件 | Coreライブラリ・単体テスト |
+| **tests/docs_examples** | ✅ 1件 | ✅ 1件 | 🔴 0件 | 🔴 0件 | ドキュメント例示テスト |
+| **tests/errors** | ✅ 3件 | ✅ 8件 | 🔴 0件 | ✅ 1件 | エラーハンドリングテスト |
+| **tests/features** | ✅ 10件 | ✅ 25件 | 🔴 0件 | ✅ 1件 | 個別機能テスト |
+| **tests/fixtures** | ✅ 1件 | ✅ 5件 | N/A | N/A | テストデータ管理 |
+| **tests/formats** | ✅ 4件 | ✅ 8件 | 🔴 0件 | ✅ 1件 | 出力形式テスト |
+| **tests/integration** | ✅ 0件 | ✅ 2件 | 🔴 0件 | 🔴 0件 | 統合テスト専用 |
+| **tests/output** | ✅ 0件 | ✅ 3件 | N/A | N/A | 出力検証テスト |
+| **総計** | ✅ 38件 | ✅ 84件 | 🔴 0件 | ✅ 6件 | 全テストファイル数 |
+
+**lawkit実測値**: Rustテスト0個実行（unitテスト未実装）、pip/npm実装状況も未確認（テスト未実装）
+
+---
+
+## 🎯 6. テストパス状況マトリクス（引数・オプション別）（実装完了段階）
+
+**目的**: 各引数・オプションのテストが実際に正常に動作するかを確認（「テストが通るか？」チェック）
 
 ### diffx テストパス状況（実装形態別）
 
@@ -467,65 +717,7 @@ cd diffx-npm && npm test tests/docs_examples/             # npm
 
 ---
 
-## 📁 5. テストディレクトリ活用状況（テスト実装段階）
-
-### diffx プロジェクト
-
-| テストディレクトリ | Rust CLI | Rust Core | pip package | npm package | 目的 |
-|-------------------|----------|-----------|-------------|-------------|------|
-| **tests/basic** | ✅ 9件 | ✅ 48件 | 🔴 0件 | ✅ 1件 | 基本機能テスト |
-| **tests/cli** | ✅ 54件 | N/A | 🔴 0件 | ✅ 1件 | CLI動作テスト |
-| **tests/core** | ✅ 48件 | ✅ 48件 | N/A | ✅ 1件 | Coreライブラリ・単体テスト |
-| **tests/docs_examples** | ✅ 8件 | ✅ 12件 | 🔴 0件 | 🔴 0件 | ドキュメント例示テスト |
-| **tests/errors** | ✅ 7件 | ✅ 10件 | 🔴 0件 | ✅ 1件 | エラーハンドリングテスト |
-| **tests/features** | ✅ 6件 | ✅ 15件 | 🔴 0件 | ✅ 1件 | 個別機能テスト |
-| **tests/fixtures** | ✅ 0件 | ✅ 5件 | N/A | N/A | テストデータ管理 |
-| **tests/formats** | ✅ 7件 | ✅ 8件 | 🔴 0件 | ✅ 1件 | 出力形式テスト |
-| **tests/integration** | ✅ 2件 | ✅ 3件 | 🔴 0件 | 🔴 0件 | 統合テスト専用 |
-| **tests/output** | ✅ 0件 | ✅ 2件 | N/A | N/A | 出力検証テスト |
-| **総計** | ✅ 131件 | ✅ 131件 | 🔴 0件 | ✅ 6件 | 全テストファイル数 |
-
-**diffx実測値**: Rustテスト117/118成功（99%）、1個失敗（edge_cases::test_empty_files）
-
-### diffai プロジェクト
-
-| テストディレクトリ | Rust CLI | Rust Core | pip package | npm package | 目的 |
-|-------------------|----------|-----------|-------------|-------------|------|
-| **tests/basic** | ✅ 4件 | ✅ 8件 | 🔴 0件 | ✅ 1件 | 基本機能テスト |
-| **tests/cli** | ✅ 5件 | N/A | 🔴 0件 | ✅ 1件 | CLI動作テスト |
-| **tests/core** | ✅ 4件 | ✅ 12件 | N/A | ✅ 1件 | Coreライブラリ・単体テスト |
-| **tests/docs_examples** | ✅ 4件 | ✅ 4件 | 🔴 0件 | 🔴 0件 | ドキュメント例示テスト |
-| **tests/errors** | ✅ 2件 | ✅ 5件 | 🔴 0件 | ✅ 1件 | エラーハンドリングテスト |
-| **tests/features** | ✅ 12件 | ✅ 18件 | 🔴 0件 | ✅ 1件 | 個別機能テスト |
-| **tests/fixtures** | ✅ 0件 | ✅ 3件 | N/A | N/A | テストデータ管理 |
-| **tests/formats** | ✅ 6件 | ✅ 10件 | 🔴 0件 | ✅ 1件 | 出力形式テスト |
-| **tests/integration** | ✅ 2件 | ✅ 2件 | 🔴 0件 | 🔴 0件 | 統合テスト専用 |
-| **tests/output** | ✅ 0件 | ✅ 3件 | N/A | N/A | 出力検証テスト |
-| **総計** | ✅ 39件 | ✅ 65件 | 🔴 0件 | ✅ 6件 | 全テストファイル数 |
-
-**diffai実測値**: Rustテスト0個実行（unitテスト未実装）、pip/npm実装状況も未確認（テスト未実装）
-
-### lawkit プロジェクト
-
-| テストディレクトリ | Rust CLI | Rust Core | pip package | npm package | 目的 |
-|-------------------|----------|-----------|-------------|-------------|------|
-| **tests/basic** | ✅ 6件 | ✅ 12件 | 🔴 0件 | ✅ 1件 | 基本機能テスト |
-| **tests/cli** | ✅ 5件 | N/A | 🔴 0件 | ✅ 1件 | CLI動作テスト |
-| **tests/core** | ✅ 8件 | ✅ 20件 | N/A | ✅ 1件 | Coreライブラリ・単体テスト |
-| **tests/docs_examples** | ✅ 1件 | ✅ 1件 | 🔴 0件 | 🔴 0件 | ドキュメント例示テスト |
-| **tests/errors** | ✅ 3件 | ✅ 8件 | 🔴 0件 | ✅ 1件 | エラーハンドリングテスト |
-| **tests/features** | ✅ 10件 | ✅ 25件 | 🔴 0件 | ✅ 1件 | 個別機能テスト |
-| **tests/fixtures** | ✅ 1件 | ✅ 5件 | N/A | N/A | テストデータ管理 |
-| **tests/formats** | ✅ 4件 | ✅ 8件 | 🔴 0件 | ✅ 1件 | 出力形式テスト |
-| **tests/integration** | ✅ 0件 | ✅ 2件 | 🔴 0件 | 🔴 0件 | 統合テスト専用 |
-| **tests/output** | ✅ 0件 | ✅ 3件 | N/A | N/A | 出力検証テスト |
-| **総計** | ✅ 38件 | ✅ 84件 | 🔴 0件 | ✅ 6件 | 全テストファイル数 |
-
-**lawkit実測値**: Rustテスト0個実行（unitテスト未実装）、pip/npm実装状況も未確認（テスト未実装）
-
----
-
-## 🔧 6. テストスクリプト実行状況マトリクス（統合検証段階）
+## 🔧 7. テストスクリプト実行状況マトリクス（統合検証段階）
 
 ### diffx プロジェクト
 
