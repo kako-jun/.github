@@ -16,63 +16,65 @@
 
 ---
 
-## 🌐 1. ドキュメント翻訳・整合性マトリクス（仕様確定段階）
+## 🌐 1. ドキュメント翻訳マトリクス（新方式：英語版コピー後高品質翻訳）
 
 ### diffx プロジェクト
 
-| ドキュメントファイル (英語版) | 古い仕様記述チェック | 日本語翻訳 | 中国語翻訳 | 構造整合性 |
-|-------------------------------|---------------------|------------|------------|------------|
-| **README.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/index.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/guides/integrations.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/guides/performance.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/guides/performance_benchmarks.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/api-reference.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/cli-reference.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/comparison.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/diffx-format.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/examples.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/faq.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/getting-started.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/installation.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
+| ドキュメントファイル (英語版) | 仕様最新性 | 各言語にコピー | 日本語翻訳 | 中国語翻訳 |
+|-------------------------------|---------------------|----------------|------------|------------|
+| **README.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/index.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/guides/integrations.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/guides/performance.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/guides/performance_benchmarks.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/reference/api-reference.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/reference/cli-reference.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/reference/comparison.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/reference/diffx-format.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/examples.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/faq.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/getting-started.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/installation.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
 
 ### diffai プロジェクト
 
-| ドキュメントファイル (英語版) | 古い仕様記述チェック | 日本語翻訳 | 中国語翻訳 | 構造整合性 |
-|-------------------------------|---------------------|------------|------------|------------|
-| **README.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/index.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/architecture/design-principles.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/architecture/implementation.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/cli-reference.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/formats.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/ml-analysis.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/ml-recommendations.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/output-formats.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/basic-usage.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/installation.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/ml-model-comparison.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/ml-workflows.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/scientific-data.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/verbose-output.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
+| ドキュメントファイル (英語版) | 仕様最新性 | 各言語にコピー | 日本語翻訳 | 中国語翻訳 |
+|-------------------------------|---------------------|----------------|------------|------------|
+| **README.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/index.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/architecture/design-principles.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/architecture/implementation.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/reference/cli-reference.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/reference/formats.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/reference/ml-analysis.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/reference/ml-recommendations.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/reference/output-formats.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/user-guide/basic-usage.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/user-guide/getting-started.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/examples.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/installation.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/ml-model-comparison.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/user-guide/ml-workflows.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/user-guide/scientific-data.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/user-guide/verbose-output.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
 
 ### lawkit プロジェクト
 
-| ドキュメントファイル (英語版) | 古い仕様記述チェック | 日本語翻訳 | 中国語翻訳 | 構造整合性 |
-|-------------------------------|---------------------|------------|------------|------------|
-| **README.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/index.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/guides/advanced-analysis.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/guides/architecture.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/guides/integrations.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/guides/performance.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/reference/cli-reference.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/configuration.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/examples.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/faq.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/getting-started.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/installation.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
-| **docs/user-guide/usage.md** | 🔍 未確認 | 🔍 翻訳確認要 | 🔍 翻訳確認要 | 🔍 構造未確認 |
+| ドキュメントファイル (英語版) | 仕様最新性 | 各言語にコピー | 日本語翻訳 | 中国語翻訳 |
+|-------------------------------|---------------------|----------------|------------|------------|
+| **README.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/index.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/guides/advanced-analysis.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/guides/architecture.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/guides/integrations.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/guides/performance.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/reference/cli-reference.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/user-guide/configuration.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
+| **docs/user-guide/examples.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/faq.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/getting-started.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/installation.md** | ✅ 確認済み | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/usage.md** | 🔍 要確認 | 🔍 未実行 | 🔍 未実行 | 🔍 未実行 |
 
 ---
 
@@ -314,6 +316,89 @@
 | **04-pre-release-test-act1.sh** | 🔍 未実行 | 🔍 未確認 | Rust ecosystem testing |
 | **05-pre-release-test-act2.sh** | 🔍 未実行 | 🔍 未確認 | Language wrapper testing |
 | **08-test-published-packages.sh** | 🔍 未実行 | 🔍 未確認 | Published packages testing |
+
+---
+
+## 📝 6. 新方針: 英語版コピー後高品質翻訳アプローチ
+
+### 方針変更の背景
+従来の「内容確認 → 翻訳品質向上」アプローチでは、言語間の意味的一致確認が困難であり、翻訳品質向上段階で意味の抜け漏れが発生するリスクがあった。
+
+### 新アプローチ
+1. **英語版コピー**: 日本語・中国語ファイルに英語版の内容を完全コピー
+2. **高品質翻訳**: 英語版を基準として、意味の抜け漏れを完全に防ぎつつ高品質翻訳を実行
+
+### マトリクス列構成（更新版）
+- **仕様最新性**: 英語版が最新仕様に合致しているか
+- **各言語にコピー**: 英語版内容をJA/ZHファイルにコピー完了
+- **日本語翻訳**: 英語版内容をベースに高品質日本語翻訳完了
+- **中国語翻訳**: 英語版内容をベースに高品質中国語翻訳完了
+
+### 作業順序
+1. 英語版仕様最新性確認（見出し数・構造一致確認含む）
+2. 英語版内容を日本語・中国語ファイルに完全コピー
+3. 各言語で高品質翻訳実行
+4. 翻訳完了確認
+
+---
+
+## 📝 7. 内容一致確認手順（参考・旧方式）
+
+### 内容一致確認の定義
+「内容一致」とは、英語版を基準として以下が3言語で完全に一致している状態：
+
+1. **見出し数の一致**: `grep -n "^#" file.md` で確認した見出し数が3言語で同一
+2. **見出し順序の一致**: 見出しの出現順序が3言語で同一
+3. **構造的内容の一致**: セクション構成、リスト項目、コードブロックの内容が一致
+4. **行数の参考確認**: `wc -l` で確認した行数の大幅な差異は内容確認のきっかけとして利用
+
+**⚠️ 重要な注意事項:**
+- **行数一致は必須条件ではない** - 言語による自然な表現の違いを尊重
+- **行数調整のための内容追加・削除は禁止** - 内容の捏造や欠落を防ぐため
+- **意味的内容の一致を最優先** - 各セクションで同じ情報が提供されていることが重要
+
+### 確認手順
+
+#### ステップ 1: 見出し数確認
+```bash
+# すべての関連ファイルの見出し数を一度に確認
+grep -n "^#" /path/to/file.md /path/to/file_ja.md /path/to/file_zh.md
+```
+
+#### ステップ 2: 行数参考確認
+```bash
+# ファイル行数の参考確認（大幅な差異があれば内容確認のトリガー）
+wc -l /path/to/file*.md
+# 注意: 行数一致は必須ではなく、大幅な差異（例: 50%以上）がある場合の警告指標
+```
+
+#### ステップ 3: 構造内容確認
+```bash
+# 特定セクションの内容比較確認
+# 例: 50行目からの30行を確認
+Read toolで英語版のoffset=50, limit=30を読み取り
+Read toolで日本語版のoffset=50, limit=30を読み取り
+# 内容構造の一致を目視確認
+```
+
+#### ステップ 4: コードブロック確認
+- CLIコマンドの出力例は英語統一で翻訳しない
+- コードコメントは各言語で翻訳する
+- ファイル名やURLは各言語版に合わせる
+
+### マトリクス更新ルール
+
+- **✅ 一致**: ステップ1（見出し数・順序）、ステップ3（構造的内容）で一致確認済み、かつステップ4（コードブロック）で適切性確認済み
+- **❌ 不一致**: ステップ1-3のいずれかで不一致を発見
+- **🔍 要確認**: 上記手順を未実行
+
+**判定基準の明確化:**
+- 行数の違いのみでは❌判定しない
+- 見出し数・構造的内容の一致を重視
+- 行数は参考情報として活用
+
+### 翻訳品質向上の前提条件
+翻訳品質を向上させる作業は、**必ず内容一致が✅の状態で実行**すること。内容が不一致のまま翻訳品質を向上させても意味がない。
 
 ---
 

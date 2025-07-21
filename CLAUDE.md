@@ -12,6 +12,7 @@
   - [テスト網羅分析](./rust-cli-kiln/test-coverage-analysis.md) - テスト完全網羅率達成記録
   - [リリースガイド](./rust-cli-kiln/release-guide.md) - 統合リリースプロセス
   - [包括的マトリクス管理](./rust-cli-kiln/comprehensive-matrix-management.md) - 多次元進捗管理システム
+  - [翻訳品質保証プロセス](./rust-cli-kiln/translation-quality-assurance.md) - ネイティブレベル翻訳基準・確認手順
   - [統合開発タスク管理](./rust-cli-kiln/tasks.md) - 包括的作業計画・進捗記録
   - [テスト組織化原則](./rust-cli-kiln/test-organization-principles.md) - 3プロジェクト統一ルール
 
