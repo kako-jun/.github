@@ -100,34 +100,69 @@
 
 ### Matrix 2 確実実行手順（READMEでの学習結果）
 
-**手順1: ドキュメント分析**
+**🚨 重要な教訓（2025年セッション学習事項）**
+
+**❌ 絶対にやってはいけないこと**:
+1. **将来構想のテスト作成** - 未実装機能のテストケースは作成しない（docker例等）
+2. **インチキ更新** - 実際のファイル作成なしにマトリクス状況を更新しない（信頼失墜）
+3. **順序無視** - Matrix 2縦軸の順序を無視して作業しない（進捗不明）
+4. **実装確認スキップ** - `cargo run -- --help`等で実装状況を確認せずに作業しない
+
+**✅ 必須の作業原則**:
+1. **実装済み機能のみをテスト** - CLI helpで確認した機能範囲内でテスト作成
+2. **temp fileアプローチ優先** - 別途fixture作成より、テスト内temp file使用が効率的
+3. **Matrix順序厳守** - 縦軸の順序通りに作業し、進捗を明確化
+4. **信頼性確保** - 作業完了を確認してからマトリクス更新
+
+**手順1: 実装状況確認**
+- `cargo run -- --help`でCLI実装状況を確認
+- 利用可能なオプションと引数を把握
+- 将来構想と実装済み機能を明確に分離
+
+**手順2: ドキュメント分析**
 - 対象ドキュメントファイルを読み取り
 - bashコードブロックから実行可能なdiffxコマンドのみを抽出
 - インストールコマンド（cargo install, npm install, pip install）は除外
 - 伝統的diffコマンドは除外
-- 正確な使用例数をカウント
+- **実装済み機能範囲内の**正確な使用例数をカウント
+- 未実装機能の使用例は除外対象として明記
 
-**手順2: テストファイル実装（4実装すべて）**
+**手順3: fixtures戦略決定**
 
-**2-1. Rust CLI実装**
+**fixtures作成 vs temp file判断基準**:
+- **temp file使用**: 動的テストデータ、簡潔なテストケース、多様なバリエーション
+- **fixtures作成**: 複雑なデータ構造、4実装での再利用、実ファイルテスト必須
+
+**fixtures作成時の原則**:
+- 共有構造: `/tests/fixtures/docs_examples/[document]/`
+- DRY原則: 4実装で同一データを使用
+- 相対パス: 各実装からの適切な相対パス指定
+- 命名規則: ドキュメント例と対応した明確な命名
+
+**手順4: テストファイル実装（4実装すべて）**
+
+**作業順序**: Matrix 2縦軸の順序に従って実装
+1. README.md → docs/index.md → docs/guides/integrations.md → ...
+
+**4-1. Rust CLI実装**
 - パス: `/home/kako-jun/repos/2025/diffx/tests/docs_examples/[document_name]_examples.rs`
 - 形式: assert_cmd使用、diffxバイナリ実行
 - 各テストケースに対応するdiffxコマンドをコメントで明記
-- `create_temp_json()` ヘルパー関数使用
+- `create_temp_json()` ヘルパー関数使用推奨
 
-**2-2. Rust Core実装**
+**4-2. Rust Core実装**
 - パス: `/home/kako-jun/repos/2025/diffx/diffx-core/tests/docs_examples/[document_name]_examples.rs`
 - 形式: diffx_coreライブラリ直接呼び出し
 - `diff()` 関数を serde_json::json! マクロと組み合わせて使用
 - CLIではなくライブラリレベルテスト
 
-**2-3. pip package実装**
+**4-3. pip package実装**
 - パス: `/home/kako-jun/repos/2025/diffx/diffx-python/tests/docs_examples/[document_name]_examples.py`
 - 形式: unittest.TestCase継承、diffx_pythonライブラリimport
 - `diffx.diff()` 関数をファイルパスで呼び出し
 - 一時ファイル作成・クリーンアップ処理含む
 
-**2-4. npm package実装**
+**4-4. npm package実装**
 - パス: `/home/kako-jun/repos/2025/diffx/diffx-npm/tests/docs_examples/[document_name]_examples.test.js`
 - 形式: Jest使用、diffxライブラリrequire
 - `diffx.diff()` 関数をファイルパスで呼び出し
@@ -142,10 +177,57 @@
 - comprehensive-matrix-management.mdの該当行を更新
 - カバー状況を「100%/100%/100%/100%」形式で記録
 
-**最終確認事項**:
+**手順5: 作業完了確認・品質保証**
+
+**5-1. テストファイル存在確認**
 - 4つの実装すべてに `tests/docs_examples/` ディレクトリが存在
 - Matrix 2縦軸と同数のテストファイルが各実装に存在
 - 各ファイルの使用例数とテストケース数が1:1で一致
+- 全てのテストケースが実装済み機能のみを対象
+
+**5-2. テスト実行確認**
+```bash
+# 各実装でテスト実行確認
+cd /home/kako-jun/repos/2025/diffx
+cargo test docs_examples --lib              # Rust CLI
+cargo test -p diffx-core docs_examples      # Rust Core  
+cd diffx-python && python -m pytest tests/docs_examples/  # Python
+cd diffx-npm && npm test tests/docs_examples/             # npm
+```
+
+**5-3. マトリクス更新タイミング**
+- **実装完了後のみ** マトリクス状況を更新
+- 「fixtures作成」列: temp file使用時は「✅ 適切」、fixture使用時は「✅ N件」
+- 各実装列: テストケース数確認後に「✅ N件」へ更新
+- カバー状況: 使用例数/テストケース数の一致確認後に「✅ 100%」へ更新
+
+**5-4. 信頼性チェックリスト**
+- [ ] 実装状況確認済み (`cargo run -- --help`)
+- [ ] 将来構想を除外済み
+- [ ] Matrix順序で作業済み  
+- [ ] 4実装すべて完了済み
+- [ ] テスト実行成功確認済み
+- [ ] マトリクス更新適切済み
+
+**最終確認事項（従来手順継続）**:
+
+**🎓 追加学習事項（2025年セッション実践経験）**
+
+**実践で判明した効率化ポイント**:
+- **既存テスト確認優先**: 新規作成前に既存実装状況を必ず確認
+- **temp fileアプローチの威力**: diffxでは全テストがtempファイル方式で既に完璧実装済み
+- **Matrix順序の重要性**: 「どこまで終わったか分からない」問題の根本解決
+- **CLI help活用**: `--help`出力が実装状況確認の最も信頼できるソース
+
+**他プロジェクト適用時の注意点**:
+- **lawkit**: 法務関連特有の機能、実装状況確認が重要
+- **diffai**: AI分析機能、将来構想と現在機能の境界明確化必須
+- **共通原則**: 全プロジェクトで「実装済み機能のみテスト」原則を厳守
+
+**品質保証の実践知見**:
+- **信頼関係維持**: 「インチキ更新」は一度でも信用失墜につながる
+- **段階的作業**: Matrix順序による系統的進行が品質と効率を両立
+- **検証の重要性**: テスト実行確認なしのマトリクス更新は禁止
 
 **特例対応**:
 - **installation.mdはテスト対象外** - 以下の合理的理由による
