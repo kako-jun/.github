@@ -82,18 +82,18 @@
 | **docs/guides/performance.md** | ✅ 確認済み (246行) | ✅ 完了 | ✅ 完了 | ✅ 完了 |
 | **docs/reference/cli-reference.md** | ✅ 確認済み (473行) | ✅ 完了 | ✅ 完了 | ✅ 完了 |
 | **docs/user-guide/configuration.md** | ✅ 確認済み (207行) | ✅ 完了 | ✅ 完了 | ✅ 完了 |
-| **docs/user-guide/examples.md** | ✅ 確認済み (340行) | ✅ 完了 | 🔍 英語コピーのみ | 🔍 英語コピーのみ |
-| **docs/user-guide/faq.md** | ✅ 確認済み (330行) | ✅ 完了 | 🔍 英語コピーのみ | 🔍 英語コピーのみ |
-| **docs/user-guide/getting-started.md** | ✅ 確認済み (250行) | ✅ 完了 | 🔍 英語コピーのみ | 🔍 英語コピーのみ |
-| **docs/user-guide/installation.md** | ✅ 確認済み (120行) | ✅ 完了 | 🔍 英語コピーのみ | 🔍 英語コピーのみ |
-| **docs/user-guide/usage.md** | ✅ 確認済み (466行) | ✅ 完了 | 🔍 英語コピーのみ | 🔍 英語コピーのみ |
+| **docs/user-guide/examples.md** | ✅ 確認済み (340行) | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/faq.md** | ✅ 確認済み (330行) | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/getting-started.md** | ✅ 確認済み (250行) | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/installation.md** | ✅ 確認済み (120行) | ✅ 完了 | ✅ 完了 | ✅ 完了 |
+| **docs/user-guide/usage.md** | ✅ 確認済み (466行) | ✅ 完了 | ✅ 完了 | ✅ 完了 |
 
-**実測調査結果サマリー (2025-07-22 23:45更新)**
+**実測調査結果サマリー (2025-07-22 最終更新)**
 - ✅ **各言語にコピー**: 全13ファイルでファイル自体は存在
-- ✅ **日本語翻訳**: 8/13ファイル完了（README.md、docs/index.md、docs/guides/advanced-analysis.md、docs/guides/architecture.md、docs/guides/integrations.md、docs/guides/performance.md、docs/reference/cli-reference.md、docs/user-guide/configuration.md）
-- ✅ **中国語翻訳**: 8/13ファイル完了（README.md、docs/index.md、docs/guides/advanced-analysis.md、docs/guides/architecture.md、docs/guides/integrations.md、docs/guides/performance.md、docs/reference/cli-reference.md、docs/user-guide/configuration.md）
-- 🔍 **残り翻訳作業**: 5ファイル（日本語）+ 5ファイル（中国語）= 10翻訳作業
-- 📈 **進捗率**: 16/26翻訳（61.5%完了）
+- ✅ **日本語翻訳**: 13/13ファイル完了（README.md、docs/index.md、docs/guides/advanced-analysis.md、docs/guides/architecture.md、docs/guides/integrations.md、docs/guides/performance.md、docs/reference/cli-reference.md、docs/user-guide/configuration.md、docs/user-guide/examples.md、docs/user-guide/faq.md、docs/user-guide/getting-started.md、docs/user-guide/installation.md、docs/user-guide/usage.md）
+- ✅ **中国語翻訳**: 13/13ファイル完了（README.md、docs/index.md、docs/guides/advanced-analysis.md、docs/guides/architecture.md、docs/guides/integrations.md、docs/guides/performance.md、docs/reference/cli-reference.md、docs/user-guide/configuration.md、docs/user-guide/examples.md、docs/user-guide/faq.md、docs/user-guide/getting-started.md、docs/user-guide/installation.md、docs/user-guide/usage.md）
+- ✅ **完了状況**: 全翻訳作業完了
+- 📈 **進捗率**: 26/26翻訳（100%完了）
 
 ---
 
