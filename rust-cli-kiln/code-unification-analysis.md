@@ -29,9 +29,9 @@
 ### 1. フォルダ名の不統一 ⚠️ 重要発見
 
 **現状**: npmパッケージのフォルダ名とライブラリ名の不一致
-- diffai: フォルダ `diffai-npm` → ライブラリ名 `diffai-js` ❌ 不一致
-- diffx: フォルダ `diffx-npm` → ライブラリ名 `diffx-js` ❌ 不一致  
-- lawkit: フォルダ `lawkit-npm` → ライブラリ名 `lawkit-js` ❌ 不一致
+- diffai: フォルダ `diffai-js` → ライブラリ名 `diffai-js` ❌ 不一致
+- diffx: フォルダ `diffx-js` → ライブラリ名 `diffx-js` ❌ 不一致  
+- lawkit: フォルダ `lawkit-js` → ライブラリ名 `lawkit-js` ❌ 不一致
 
 **統一目標**: フォルダ名を `-js` に統一（3プロジェクト全て対象）
 **作業内容**: ⚠️ **重要**: 影響範囲が大幅拡大

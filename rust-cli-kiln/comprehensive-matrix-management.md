@@ -495,7 +495,7 @@
 | **diffx/tests/output/** | 📁 N/A | テスト実行時の出力ファイル保存場所 | 出力検証用 |
 | **diffx-core/tests/unit/** | ✅ 6件 | algorithms.rs, api.rs, config.rs, parsers.rs, semantic_analysis.rs, utils.rs | coreライブラリ単体テスト |
 | **diffx-core/tests/docs_examples/** | ✅ 13件 | api-reference.rs, cli-reference.rs, comparison.rs, performance.rs 等 | Core APIドキュメント例示 |
-| **diffx-npm/tests/docs_examples/** | ✅ 13件 | getting-started.js, examples.js, api-reference.js 等 | npm API例示 |
+| **diffx-js/tests/docs_examples/** | ✅ 13件 | getting-started.js, examples.js, api-reference.js 等 | npm API例示 |
 | **diffx-python/tests/docs_examples/** | ✅ 13件 | getting_started.py, examples.py, api_reference.py 等 | Python API例示 |
 | **総計** | **84ファイル** | | 全テストファイル数 |
 
@@ -514,7 +514,7 @@
 | **diffai/tests/fixtures/** | 📁 N/A | MLモデル、データセット等 | テストデータ管理 |
 | **diffai-core/tests/unit/** | ⚠️ 3件 | analyzers.rs, formatters.rs, parsers.rs | coreライブラリ単体テスト（内容未確認） |
 | **diffai-core/tests/docs_examples/** | ⚠️ 1件 | getting-started.rs | Core APIドキュメント例示 |
-| **diffai-npm/tests/docs_examples/** | 🔍 未調査 | | npm API例示 |
+| **diffai-js/tests/docs_examples/** | 🔍 未調査 | | npm API例示 |
 | **diffai-python/tests/docs_examples/** | 🔍 未調査 | | Python API例示 |
 | **総計** | **36ファイル+** | | 確認済みファイル数 |
 
@@ -533,7 +533,7 @@
 | **lawkit/tests/fixtures/** | 📁 N/A | 法務データ、サンプルファイル等 | テストデータ管理 |
 | **lawkit-core/tests/unit/** | ⚠️ 7件 | benford.rs, pareto.rs, zipf.rs, normal.rs, poisson.rs, validations.rs, utils.rs | coreライブラリ単体テスト（内容未確認） |
 | **lawkit-core/tests/docs_examples/** | ⚠️ 1件 | examples.rs | Core APIドキュメント例示 |
-| **lawkit-npm/tests/docs_examples/** | 🔍 未調査 | | npm API例示 |
+| **lawkit-js/tests/docs_examples/** | 🔍 未調査 | | npm API例示 |
 | **lawkit-python/tests/docs_examples/** | 🔍 未調査 | | Python API例示 |
 | **総計** | **37ファイル+** | | 確認済みファイル数 |
 

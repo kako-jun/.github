@@ -66,15 +66,15 @@
 
 ### **lawkit パッケージ**
 - **lawkit-python**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`) ✅サブフォルダ化完成済み
-- **lawkit-npm**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`) ✅サブフォルダ化完成済み
+- **lawkit-js**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`) ✅サブフォルダ化完成済み
 
 ### **diffai パッケージ**
 - **diffai-python**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
-- **diffai-npm**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
+- **diffai-js**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
 
 ### **diffx パッケージ**
 - **diffx-python**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
-- **diffx-npm**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
+- **diffx-js**: 8サブディレクトリ (`tests/basic/`, `tests/core/`, `tests/cli/`, `tests/errors/`, `tests/features/`, `tests/formats/`, `tests/integration/`, `tests/docs_examples/`)
 
 ## 🔄 継続的遵守
 
