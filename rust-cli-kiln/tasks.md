@@ -158,3 +158,26 @@ TDDの正しい順序（仕様確定 → テスト作成 → 実装・検証）�
 
 - [x] comprehensive-matrix-management.md整理完了: 全体方針を上部配置、各マトリクス手順を直下配置、古い長文説明削除
 - [x] Matrix手順の具体化: AIが再現可能な詳細な手順記述に修正完了
+
+## 統一API実装完了事項（2025-07-24）
+
+### 完了したAPI統一作業
+
+- [x] **統一API設計完了**: diffx/diffai用の `diff()` 関数、lawkit用の `law()` 関数設計
+- [x] **diffx-core 完全書き直し**: 既存API（diff_standard等）完全削除、新統一API実装
+- [x] **diffai-core 完全書き直し**: 既存API完全削除、新統一API実装
+- [x] **lawkit-core 完全書き直し**: 8000行以上の旧CLI実装削除、新統一API実装
+- [x] **Python bindings 全プロジェクト実装**: PyO3 0.22使用、全3プロジェクト完了
+- [x] **JavaScript bindings 全プロジェクト実装**: NAPI-RS 2.2使用、全3プロジェクト完了
+- [x] **CLIバイナリラッパー方式からの完全移行**: 
+  - [x] 不要なbinディレクトリ削除（lawkit-cli/src/bin等）
+  - [x] pyproject.toml更新（bindings = "bin" → "pyo3"）
+  - [x] package.json更新（bin フィールド削除、files を *.node に更新）
+  - [x] ワークフロー更新（バイナリダウンロード方式 → PyO3/NAPIビルド方式）
+
+### 残作業
+
+- [ ] **統一APIテスト作成・検証**: 新APIの包括的テスト実装
+- [ ] **diffai言語バインディング不完全問題修正**: パーサー関数（parse_pytorch_model等）とformat_output追加
+- [ ] **lawkit言語バインディング不完全問題修正**: パーサー関数（parse_json等）とformat_output追加  
+- [ ] **全プロジェクトcore APIにディレクトリ再帰処理（--recursive）実装**: CLIオプションの完全API対応
