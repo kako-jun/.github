@@ -38,6 +38,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Debug event info
+      run: |
+        echo "Event name: ${{ github.event_name }}"
+        echo "Input project-name: ${{ inputs.project-name }}"
+        echo "Repository would be: ${{ (github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch') && format('kako-jun/{0}', inputs.project-name) || github.repository }}"
+        
     - name: Checkout code
       uses: actions/checkout@v4
       with:
