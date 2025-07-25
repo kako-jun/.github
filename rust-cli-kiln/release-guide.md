@@ -35,42 +35,48 @@
 - 更新後のローカルファイル内バージョンの整合性チェック
 - 抜けや不一致がないか確認
 
-### ステップ5: ビルド・テスト・公開準備（統合）
+### ステップ5: ビルド・テスト（全パッケージ）
 ```bash
-# ローカル実行: ビルドとテストのみ（公開なし）
-./github-shared/rust-cli-kiln/scripts/release/05-build-and-publish.sh
-
 # 事前要件: Python環境でmaturinインストール必須
 source .venv/bin/activate && uv pip install maturin wheel build twine
+
+./github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh
 ```
-- **旧04+05スクリプトを統合した新しいスクリプト**
-- 全Rustコンポーネント、npm、Pythonパッケージのビルド・テスト
-- crates.io、npm、PyPI公開準備確認（dry runのみ）
-- **ローカル実行時は公開なし、GitHub Actionsでのみ実際の公開実行**
-- **バージョン更新後のdiffがある状態で実行（正常）**
-- **失敗時はここで停止**
-- **⚠️ 注意**: maturinビルドとパッケージテストで時間がかかる（5-10分）
+- **全パッケージの包括的ビルド・テスト**（旧quick-check.shの正式版）
+- Rust CLI・core、npm、Pythonパッケージを順次ビルド・テスト
+- **全てパス後のみ次のステップ（公開）に進行可能**
+- **⚠️ 注意**: maturinビルドで時間がかかる（5-10分）
 - **Claude実行時**: タイムアウトを10分（600000ms）に設定して実行
 
-### ステップ6: リリースタグ作成
+### ステップ6: アトミック公開（全パッケージ）
 ```bash
-./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh
+./github-shared/rust-cli-kiln/scripts/release/06-publish.sh
+```
+- **アトミック公開戦略**: 全パッケージ同時公開
+- ローカル: dry-run検証のみ、GitHub Actions: 実際の公開
+- **部分失敗防止**: 全て成功 or 全て失敗
+- crates.io → npmjs.com → PyPI の順で公開
+- **⚠️ 重要**: 05と同じ環境で連続実行必須
+
+### ステップ7: リリースタグ作成
+```bash
+./github-shared/rust-cli-kiln/scripts/release/07-create-release-tag.sh
 ```
 - **バージョン更新の変更をコミット**（ここで初めてcommit）
 - Gitタグ作成・プッシュ
 - GitHubリリースページ作成
 - GitHub Actionsトリガー
 
-### ステップ7: リリース監視
+### ステップ8: リリース監視
 ```bash
-./github-shared/rust-cli-kiln/scripts/release/07-monitor-release.sh vX.Y.Z
+./github-shared/rust-cli-kiln/scripts/release/08-monitor-release.sh vX.Y.Z
 ```
 - GitHub Actionsの実行状況監視
 - 全プラットフォームでの公開完了確認
 
-### ステップ8: 公開パッケージ検証【必須】
+### ステップ9: 公開パッケージ検証【必須】
 ```bash
-./github-shared/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+./github-shared/rust-cli-kiln/scripts/release/09-test-published-packages.sh
 ```
 - **強化されたマルチプラットフォーム対応**
 - OS・アーキテクチャ自動検出
@@ -96,18 +102,21 @@ source .venv/bin/activate && uv pip install maturin wheel build twine
 # ステップ4: 整合性確認
 ./github-shared/rust-cli-kiln/scripts/release/04-check-local-versions.sh
 
-# ステップ5: 統合ビルド・テスト（統合版）
+# ステップ5: ビルド・テスト（全パッケージ）
 source .venv/bin/activate && uv pip install maturin wheel build twine
-./github-shared/rust-cli-kiln/scripts/release/05-build-and-publish.sh
+./github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh
 
-# ステップ6: リリース実行
-./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh
+# ステップ6: アトミック公開（全パッケージ）
+./github-shared/rust-cli-kiln/scripts/release/06-publish.sh
 
-# ステップ7: 監視
-./github-shared/rust-cli-kiln/scripts/release/07-monitor-release.sh vX.Y.Z
+# ステップ7: リリースタグ作成
+./github-shared/rust-cli-kiln/scripts/release/07-create-release-tag.sh
 
-# ステップ8: 公開パッケージ検証【必須】
-./github-shared/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+# ステップ8: 監視
+./github-shared/rust-cli-kiln/scripts/release/08-monitor-release.sh vX.Y.Z
+
+# ステップ9: 公開パッケージ検証【必須】
+./github-shared/rust-cli-kiln/scripts/release/09-test-published-packages.sh
 ```
 
 ## 🛠️ 日常開発用クイックチェック

@@ -43,6 +43,10 @@ jobs:
           - os: windows-latest
             arch: x64
             platform: win32-x64
+          # Windows ARM64
+          - os: windows-latest
+            arch: arm64
+            platform: win32-arm64
     
     runs-on: ${{ matrix.os }}
     
@@ -75,7 +79,7 @@ jobs:
         if [ -d "../diffx" ] && [ -f "../diffx/Cargo.toml" ]; then
           cd "../diffx"
           echo "Testing published packages for diffx on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
         else
           echo "diffx project not found, skipping..."
         fi
@@ -87,7 +91,7 @@ jobs:
         if [ -d "../diffai" ] && [ -f "../diffai/Cargo.toml" ]; then
           cd "../diffai"
           echo "Testing published packages for diffai on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
         else
           echo "diffai project not found, skipping..."
         fi
@@ -99,7 +103,7 @@ jobs:
         if [ -d "../lawkit" ] && [ -f "../lawkit/Cargo.toml" ]; then
           cd "../lawkit"
           echo "Testing published packages for lawkit on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
         else
           echo "lawkit project not found, skipping..."
         fi
