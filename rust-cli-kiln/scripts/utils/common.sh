@@ -53,6 +53,37 @@ init_project_vars() {
     export SCRIPT_DIR PROJECT_ROOT PROJECT_NAME
 }
 
+# Auto-detect project name for GitHub Actions workflows
+detect_project_for_workflow() {
+    local input_project="${1:-}"
+    
+    # Use provided project name if available
+    if [ -n "$input_project" ]; then
+        echo "$input_project"
+        return 0
+    fi
+    
+    # Auto-detect from repository name
+    if [ -n "${GITHUB_REPOSITORY:-}" ]; then
+        local repo_name=$(basename "$GITHUB_REPOSITORY")
+        if [[ "$repo_name" =~ ^(diffx|diffai|lawkit)$ ]]; then
+            echo "$repo_name"
+            return 0
+        fi
+    fi
+    
+    # Try to detect from directory structure
+    for project in diffx diffai lawkit; do
+        if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
+            echo "$project"
+            return 0
+        fi
+    done
+    
+    # No project found
+    return 1
+}
+
 # Check if running in GitHub Actions
 is_github_actions() {
     [ -n "${GITHUB_ACTIONS:-}" ]

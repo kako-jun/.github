@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'Project name (diffx, diffai, or lawkit)'
+        required: true
+        type: string
 
 env:
   CARGO_TERM_COLOR: always
@@ -64,33 +70,40 @@ jobs:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
       run: |
-        # This script needs to be run from the actual project directory
-        # Find the project directory (contains Cargo.toml with workspace)
-        for project in diffx diffai lawkit; do
-          if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
-            echo "Found project: $project"
-            cd "../$project"
-            
-            # Setup Python virtual environment for maturin
-            source .venv/bin/activate 2>/dev/null || { uv venv && source .venv/bin/activate; }
-            uv pip install maturin wheel build twine
-            
-            echo "Step 1: Running comprehensive build and test..."
-            ./.github/rust-cli-kiln/scripts/release/05-build-and-test.sh
-            
-            echo "Step 2: Running atomic publish (same environment)..."
-            ./.github/rust-cli-kiln/scripts/release/06-publish.sh
-            
-            break
-          fi
-        done
+        # Determine project name from workflow_call input or detect from repository
+        if [ "${{ github.event_name }}" = "workflow_call" ]; then
+          PROJECT_NAME="${{ inputs.project-name }}"
+          echo "Using project name from workflow_call: $PROJECT_NAME"
+        else
+          # Auto-detect from repository name or directory
+          for project in diffx diffai lawkit; do
+            if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
+              PROJECT_NAME="$project"
+              echo "Detected project: $PROJECT_NAME"
+              break
+            fi
+          done
+        fi
         
-        if [ ! -f "Cargo.toml" ]; then
-          echo "Error: No project with Cargo.toml found"
+        # Navigate to project directory
+        if [ -n "$PROJECT_NAME" ] && [ -d "../$PROJECT_NAME" ] && [ -f "../$PROJECT_NAME/Cargo.toml" ]; then
+          cd "../$PROJECT_NAME"
+        else
+          echo "Error: Project not found or invalid: $PROJECT_NAME"
           echo "Available directories:"
           ls -la ../
           exit 1
         fi
+        
+        # Setup Python virtual environment for maturin
+        source .venv/bin/activate 2>/dev/null || { uv venv && source .venv/bin/activate; }
+        uv pip install maturin wheel build twine
+        
+        echo "Step 1: Running comprehensive build and test..."
+        ./.github/rust-cli-kiln/scripts/release/05-build-and-test.sh
+        
+        echo "Step 2: Running atomic publish (same environment)..."
+        ./.github/rust-cli-kiln/scripts/release/06-publish.sh
   
   test-published-packages:
     needs: build-and-publish
