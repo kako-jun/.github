@@ -1,16 +1,6 @@
 name: Rust CLI Kiln - CI Build and Test
 
 on:
-  workflow_dispatch:
-    inputs:
-      project-name:
-        description: 'Project to run CI for'
-        required: true
-        type: choice
-        options:
-        - diffx
-        - diffai
-        - lawkit
   workflow_call:
     inputs:
       project-name:
@@ -29,8 +19,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        repository: ${{ github.event_name == 'workflow_call' && format('kako-jun/{0}', inputs.project-name) || github.event_name == 'workflow_dispatch' && format('kako-jun/{0}', github.event.inputs.project-name) || github.repository }}
-        ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.ref }}
+        repository: ${{ format('kako-jun/{0}', inputs.project-name) }}
+        ref: ${{ github.ref }}
       
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
@@ -69,11 +59,7 @@ jobs:
     - name: Setup environment and run build-and-test
       run: |
         # Setup environment variables for workflow type
-        if [ "${{ github.event_name }}" = "workflow_call" ]; then
-          export WORKFLOW_CALL_PROJECT="${{ inputs.project-name }}"
-        elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          export WORKFLOW_DISPATCH_PROJECT="${{ github.event.inputs.project-name }}"
-        fi
+        export WORKFLOW_CALL_PROJECT="${{ inputs.project-name }}"
         
         # Source common.sh and setup environment
         if [ -d "rust-cli-kiln" ]; then

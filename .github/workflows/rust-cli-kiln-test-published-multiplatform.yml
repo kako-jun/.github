@@ -1,21 +1,6 @@
 name: Rust CLI Kiln - Test Published Packages Multi-Platform
 
 on:
-  schedule:
-    # Run weekly on Sundays at 02:00 UTC
-    - cron: '0 2 * * 0'
-  workflow_dispatch:
-    inputs:
-      project:
-        description: 'Project to test (diffx, diffai, lawkit, or all)'
-        required: false
-        default: 'all'
-        type: choice
-        options:
-        - all
-        - diffx
-        - diffai
-        - lawkit
   workflow_call:
     inputs:
       project:
@@ -60,7 +45,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        repository: ${{ github.event_name == 'workflow_call' && format('kako-jun/{0}', inputs.project) || github.repository }}
+        repository: ${{ format('kako-jun/{0}', inputs.project) }}
         ref: ${{ github.ref }}
         
       
@@ -86,19 +71,7 @@ jobs:
     - name: Test published packages
       run: |
         # Determine which projects to test
-        PROJECTS_TO_TEST=""
-        
-        if [ "${{ github.event_name }}" = "workflow_call" ]; then
-          PROJECTS_TO_TEST="${{ inputs.project }}"
-        elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          if [ "${{ github.event.inputs.project }}" = "all" ]; then
-            PROJECTS_TO_TEST="diffx diffai lawkit"
-          else
-            PROJECTS_TO_TEST="${{ github.event.inputs.project }}"
-          fi
-        elif [ "${{ github.event_name }}" = "schedule" ]; then
-          PROJECTS_TO_TEST="diffx diffai lawkit"
-        fi
+        PROJECTS_TO_TEST="${{ inputs.project }}"
         
         # Source common.sh
         if [ -d "rust-cli-kiln" ]; then
@@ -122,11 +95,7 @@ jobs:
           SAVED_DIR=$(pwd)
           
           # Setup environment for this project
-          if [ "${{ github.event_name }}" = "workflow_call" ]; then
-            export WORKFLOW_CALL_PROJECT="$PROJECT"
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            export WORKFLOW_DISPATCH_PROJECT="$PROJECT"
-          fi
+          export WORKFLOW_CALL_PROJECT="$PROJECT"
           
           if setup_github_actions_env "$PROJECT"; then
             echo "Testing published packages for $PROJECT on ${{ matrix.platform }}..."

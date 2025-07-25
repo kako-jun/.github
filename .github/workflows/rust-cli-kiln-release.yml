@@ -19,7 +19,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        repository: ${{ github.event_name == 'workflow_call' && format('kako-jun/{0}', inputs.project-name) || github.repository }}
+        repository: ${{ format('kako-jun/{0}', inputs.project-name) }}
         ref: ${{ github.ref }}
         
       
@@ -72,9 +72,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
       run: |
         # Setup environment variables for workflow type
-        if [ "${{ github.event_name }}" = "workflow_call" ]; then
-          export WORKFLOW_CALL_PROJECT="${{ inputs.project-name }}"
-        fi
+        export WORKFLOW_CALL_PROJECT="${{ inputs.project-name }}"
         
         # Source common.sh and setup environment
         if [ -d "rust-cli-kiln" ]; then
