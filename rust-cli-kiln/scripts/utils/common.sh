@@ -27,6 +27,14 @@ find_project_root() {
 
 # Initialize project root and name
 init_project_vars() {
+    # Skip initialization if variables are already set by setup_github_actions_env
+    if [ -n "${PROJECT_ROOT:-}" ] && [ -n "${PROJECT_NAME:-}" ]; then
+        echo "Project variables already initialized by setup_github_actions_env"
+        echo "  Project: $PROJECT_NAME"
+        echo "  Project root: $PROJECT_ROOT"
+        return 0
+    fi
+    
     # Use the calling script's directory
     if [ -n "${BASH_SOURCE[1]:-}" ]; then
         SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
