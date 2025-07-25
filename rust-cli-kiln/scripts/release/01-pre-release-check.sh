@@ -350,9 +350,9 @@ check_security() {
     fi
     
     # npm audit (only high severity)
-    if command -v npm &> /dev/null && [ -f "$PROJECT_ROOT/${PROJECT_NAME}-npm/package-lock.json" ]; then
+    if command -v npm &> /dev/null && [ -f "$PROJECT_ROOT/${PROJECT_NAME}-js/package-lock.json" ]; then
         print_info "Running npm audit..."
-        cd "$PROJECT_ROOT/${PROJECT_NAME}-npm"
+        cd "$PROJECT_ROOT/${PROJECT_NAME}-js"
         if npm audit --audit-level=high &> /dev/null; then
             print_success "No critical npm vulnerabilities"
         else
@@ -397,7 +397,7 @@ check_package_structure() {
         "${PROJECT_NAME}-core/Cargo.toml"
         "${PROJECT_NAME}-cli/Cargo.toml"
         "${PROJECT_NAME}-python/pyproject.toml"
-        "${PROJECT_NAME}-npm/package.json"
+        "${PROJECT_NAME}-js/package.json"
     )
     
     for file in "${REQUIRED_FILES[@]}"; do
@@ -418,7 +418,7 @@ check_package_structure() {
     fi
     
     # Check npm package structure
-    if [ -f "$PROJECT_ROOT/${PROJECT_NAME}-npm/index.js" ]; then
+    if [ -f "$PROJECT_ROOT/${PROJECT_NAME}-js/index.js" ]; then
         print_success "npm package structure is correct"
     else
         print_error "npm package structure is incorrect"
