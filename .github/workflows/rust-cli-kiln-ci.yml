@@ -41,13 +41,14 @@ jobs:
     - name: Debug event info
       run: |
         echo "Event name: ${{ github.event_name }}"
-        echo "Input project-name: ${{ inputs.project-name }}"
-        echo "Repository would be: ${{ (github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch') && format('kako-jun/{0}', inputs.project-name) || github.repository }}"
+        echo "Input project-name (inputs): ${{ inputs.project-name }}"
+        echo "Input project-name (event.inputs): ${{ github.event.inputs.project-name }}"
+        echo "Repository: ${{ github.repository }}"
         
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        repository: ${{ (github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch') && format('kako-jun/{0}', inputs.project-name) || github.repository }}
+        repository: ${{ github.event_name == 'workflow_call' && format('kako-jun/{0}', inputs.project-name) || github.event_name == 'workflow_dispatch' && format('kako-jun/{0}', github.event.inputs.project-name) || github.repository }}
         ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.ref }}
         
     - name: Setup rust-cli-kiln symlink (for workflow_call or workflow_dispatch)
@@ -104,10 +105,14 @@ jobs:
     - name: Detect project and run build-and-test
       run: |
         # Determine project and navigate to correct directory
-        if [ "${{ github.event_name }}" = "workflow_call" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          # For workflow_call or workflow_dispatch, we're already in the project directory
+        if [ "${{ github.event_name }}" = "workflow_call" ]; then
+          # For workflow_call, we're already in the project directory
           PROJECT_NAME="${{ inputs.project-name }}"
-          echo "Using project from workflow_call/workflow_dispatch: $PROJECT_NAME"
+          echo "Using project from workflow_call: $PROJECT_NAME"
+        elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          # For workflow_dispatch, we're already in the project directory
+          PROJECT_NAME="${{ github.event.inputs.project-name }}"
+          echo "Using project from workflow_dispatch: $PROJECT_NAME"
           
           if [ ! -f "Cargo.toml" ]; then
             echo "Error: Not in project directory (workflow_call/workflow_dispatch)"
