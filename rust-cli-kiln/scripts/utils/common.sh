@@ -27,9 +27,10 @@ find_project_root() {
 
 # Initialize project root and name
 init_project_vars() {
-    # If already initialized by setup_github_actions_env, just cd there
+    # If already initialized by setup_github_actions_env, use current directory
     if [ -n "${PROJECT_ROOT:-}" ]; then
-        cd "$PROJECT_ROOT"
+        # The current directory already contains the project content
+        # Don't cd anywhere, just use what we have
         return 0
     fi
     
