@@ -125,4 +125,4 @@ jobs:
         fi
         
         echo "Running quick check for $PROJECT_NAME..."
-        ./.github/rust-cli-kiln/scripts/testing/quick-check.sh
+        ./.github/rust-cli-kiln/scripts/release/05-build-and-test.sh
