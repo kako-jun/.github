@@ -27,11 +27,12 @@ find_project_root() {
 
 # Initialize project root and name
 init_project_vars() {
-    # Skip initialization if variables are already set by setup_github_actions_env
+    # If variables are already set by setup_github_actions_env, just cd to the correct directory
     if [ -n "${PROJECT_ROOT:-}" ] && [ -n "${PROJECT_NAME:-}" ]; then
         echo "Project variables already initialized by setup_github_actions_env"
         echo "  Project: $PROJECT_NAME"
         echo "  Project root: $PROJECT_ROOT"
+        cd "$PROJECT_ROOT"
         return 0
     fi
     
