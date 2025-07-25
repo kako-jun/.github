@@ -4,62 +4,52 @@
 
 > 🔄 **汎用リリースガイド**: このガイドは複数のRustプロジェクトで使い回し可能です
 
-## 🎯 リリース手順（9ステップ）
+## 🎯 リリース手順（8ステップ - 改善版）
 
-### ステップ0: 事前チェック（必須）
+### ステップ1: 事前チェック（必須）
 ```bash
-./github-shared/rust-cli-kiln/scripts/release/00-pre-release-check.sh
+./github-shared/rust-cli-kiln/scripts/release/01-pre-release-check.sh
 ```
 - **バージョン更新前の**git状態、認証、依存関係の包括的確認
 - clean working directoryの確認（バージョン更新前に必須）
 - 問題発見時は早期修正可能
 
-### ステップ1: 公開済みバージョンの確認
+### ステップ2: 公開済みバージョンの確認
 ```bash
-./github-shared/rust-cli-kiln/scripts/release/01-check-published-versions.sh
+./github-shared/rust-cli-kiln/scripts/release/02-check-published-versions.sh
 ```
 - crates.io, PyPI, npmの現在の公開バージョンを確認
 - 次にリリースすべきバージョンを判断
 
-### ステップ2: バージョン更新
+### ステップ3: バージョン更新
 ```bash
-./github-shared/rust-cli-kiln/scripts/release/02-update-version.sh X.Y.Z
+./github-shared/rust-cli-kiln/scripts/release/03-update-version.sh X.Y.Z
 ```
 - 全製品コンポーネントのバージョンを一括更新
-- 例: `./github-shared/rust-cli-kiln/scripts/release/02-update-version.sh 1.2.3`
+- 例: `./github-shared/rust-cli-kiln/scripts/release/03-update-version.sh 1.2.3`
 
-### ステップ3: 更新後の整合性確認
+### ステップ4: 更新後の整合性確認
 ```bash
-./github-shared/rust-cli-kiln/scripts/release/03-check-local-versions.sh
+./github-shared/rust-cli-kiln/scripts/release/04-check-local-versions.sh
 ```
 - 更新後のローカルファイル内バージョンの整合性チェック
 - 抜けや不一致がないか確認
 
-### ステップ4: Act1テスト（コア機能）
+### ステップ5: ビルド・テスト・公開準備（統合）
 ```bash
-./github-shared/rust-cli-kiln/scripts/testing/04-pre-release-test-act1.sh
-```
-- GitHub Actions Release Act1と同等のテスト実行
-- Rustビルド・テスト・crates.io公開準備確認（dry runのみ）
-- **バージョン更新後のdiffがある状態で実行（正常）**
-- **実際の公開はGitHub Actionsでのみ実行**
-- **失敗時はここで停止**
-- **Claude実行時の注意**: 5分以上かかる場合があるため、タイムアウトを10分に設定して実行
+# ローカル実行: ビルドとテストのみ（公開なし）
+./github-shared/rust-cli-kiln/scripts/release/05-build-and-publish.sh
 
-### ステップ5: Act2テスト（言語ラッパー）
-```bash
 # 事前要件: Python環境でmaturinインストール必須
 source .venv/bin/activate && uv pip install maturin wheel build twine
-
-./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
 ```
-- GitHub Actions Release Act2と同等のテスト実行
-- npm・PyPI公開準備確認（dry runのみ）
-- **maturin未インストール時は失敗扱い（WARNING時は停止）**
+- **旧04+05スクリプトを統合した新しいスクリプト**
+- 全Rustコンポーネント、npm、Pythonパッケージのビルド・テスト
+- crates.io、npm、PyPI公開準備確認（dry runのみ）
+- **ローカル実行時は公開なし、GitHub Actionsでのみ実際の公開実行**
 - **バージョン更新後のdiffがある状態で実行（正常）**
-- **実際の公開はGitHub Actionsでのみ実行**
-- **Act1成功後のみ実行**
-- **⚠️ 注意**: このスクリプトはmaturinビルドとパッケージテストで時間がかかる（5-10分）
+- **失敗時はここで停止**
+- **⚠️ 注意**: maturinビルドとパッケージテストで時間がかかる（5-10分）
 - **Claude実行時**: タイムアウトを10分（600000ms）に設定して実行
 
 ### ステップ6: リリースタグ作成
@@ -82,32 +72,33 @@ source .venv/bin/activate && uv pip install maturin wheel build twine
 ```bash
 ./github-shared/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
 ```
-- npm、PyPI公開パッケージの動作確認
+- **強化されたマルチプラットフォーム対応**
+- OS・アーキテクチャ自動検出
+- npm、PyPI、crates.io公開パッケージの動作確認
 - **重要**: パッケージ配布の問題を検出するため必須実行
 - 実環境でのインストール・動作テスト
-- クロスプラットフォーム互換性確認
+- **ローカル実行**: 現在のプラットフォームのみテスト
+- **GitHub Actions**: 全OS・アーキテクチャでテスト実行
 - **失敗してもリリースは有効（品質保証目的）**
 
 ## 📋 完全な実行例
 
 ```bash
-# ステップ0: 事前チェック（推奨）
-./github-shared/rust-cli-kiln/scripts/release/00-pre-release-check.sh
+# ステップ1: 事前チェック（推奨）
+./github-shared/rust-cli-kiln/scripts/release/01-pre-release-check.sh
 
-# ステップ1: 現在の状況確認
-./github-shared/rust-cli-kiln/scripts/release/01-check-published-versions.sh
+# ステップ2: 現在の状況確認
+./github-shared/rust-cli-kiln/scripts/release/02-check-published-versions.sh
 
-# ステップ2: 新バージョンに更新
-./github-shared/rust-cli-kiln/scripts/release/02-update-version.sh X.Y.Z
+# ステップ3: 新バージョンに更新
+./github-shared/rust-cli-kiln/scripts/release/03-update-version.sh X.Y.Z
 
-# ステップ3: 整合性確認
-./github-shared/rust-cli-kiln/scripts/release/03-check-local-versions.sh
+# ステップ4: 整合性確認
+./github-shared/rust-cli-kiln/scripts/release/04-check-local-versions.sh
 
-# ステップ4: Act1テスト
-./github-shared/rust-cli-kiln/scripts/testing/04-pre-release-test-act1.sh
-
-# ステップ5: Act2テスト  
-./github-shared/rust-cli-kiln/scripts/testing/05-pre-release-test-act2.sh
+# ステップ5: 統合ビルド・テスト（統合版）
+source .venv/bin/activate && uv pip install maturin wheel build twine
+./github-shared/rust-cli-kiln/scripts/release/05-build-and-publish.sh
 
 # ステップ6: リリース実行
 ./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh

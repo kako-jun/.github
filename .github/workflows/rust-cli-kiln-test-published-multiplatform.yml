@@ -1,0 +1,152 @@
+name: Rust CLI Kiln - Test Published Packages Multi-Platform
+
+on:
+  schedule:
+    # Run weekly on Sundays at 02:00 UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project to test (diffx, diffai, lawkit, or all)'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - diffx
+        - diffai
+        - lawkit
+
+jobs:
+  test-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux x64
+          - os: ubuntu-latest
+            arch: x64
+            platform: linux-x64
+          # Linux ARM64 (using emulation)
+          - os: ubuntu-latest
+            arch: arm64
+            platform: linux-arm64
+          # macOS Intel
+          - os: macos-13
+            arch: x64
+            platform: darwin-x64
+          # macOS Apple Silicon
+          - os: macos-latest
+            arch: arm64
+            platform: darwin-arm64
+          # Windows x64
+          - os: windows-latest
+            arch: x64
+            platform: win32-x64
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up QEMU (for ARM64 emulation on Linux)
+      if: matrix.os == 'ubuntu-latest' && matrix.arch == 'arm64'
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: arm64
+        
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Test published packages - diffx
+      if: github.event.inputs.project == 'diffx' || github.event.inputs.project == 'all' || github.event_name == 'schedule'
+      run: |
+        if [ -d "../diffx" ] && [ -f "../diffx/Cargo.toml" ]; then
+          cd "../diffx"
+          echo "Testing published packages for diffx on ${{ matrix.platform }}..."
+          ./.github/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+        else
+          echo "diffx project not found, skipping..."
+        fi
+      shell: bash
+      
+    - name: Test published packages - diffai
+      if: github.event.inputs.project == 'diffai' || github.event.inputs.project == 'all' || github.event_name == 'schedule'
+      run: |
+        if [ -d "../diffai" ] && [ -f "../diffai/Cargo.toml" ]; then
+          cd "../diffai"
+          echo "Testing published packages for diffai on ${{ matrix.platform }}..."
+          ./.github/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+        else
+          echo "diffai project not found, skipping..."
+        fi
+      shell: bash
+      
+    - name: Test published packages - lawkit
+      if: github.event.inputs.project == 'lawkit' || github.event.inputs.project == 'all' || github.event_name == 'schedule'
+      run: |
+        if [ -d "../lawkit" ] && [ -f "../lawkit/Cargo.toml" ]; then
+          cd "../lawkit"
+          echo "Testing published packages for lawkit on ${{ matrix.platform }}..."
+          ./.github/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+        else
+          echo "lawkit project not found, skipping..."
+        fi
+      shell: bash
+      
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.platform }}
+        path: /tmp/*-test-report-*.txt
+        retention-days: 30
+        
+  summary:
+    needs: test-matrix
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Download all test results
+      uses: actions/download-artifact@v3
+      with:
+        path: test-results
+        
+    - name: Generate summary report
+      run: |
+        echo "# Multi-Platform Test Summary" > summary.md
+        echo "" >> summary.md
+        echo "Test Date: $(date)" >> summary.md
+        echo "" >> summary.md
+        
+        # Process all test result files
+        find test-results -name "*.txt" | while read -r file; do
+          echo "## $(basename "$file" .txt)" >> summary.md
+          echo "" >> summary.md
+          echo '```' >> summary.md
+          cat "$file" >> summary.md
+          echo '```' >> summary.md
+          echo "" >> summary.md
+        done
+        
+        # Display summary
+        cat summary.md
+        
+    - name: Upload summary report
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-summary
+        path: summary.md
+        retention-days: 90

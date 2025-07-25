@@ -1,8 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-# Create git tag and push for release
+# Create git tag and push for release - AI Optimized
 # This script only handles tag creation and pushing, nothing else
+# NO INTERACTIVE INPUT - Fully automated for AI execution
+
+# Disable proxychains for clean execution
+export LD_PRELOAD=
 
 # Load common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,6 +14,8 @@ source "$SCRIPT_DIR/../utils/common.sh"
 
 # Initialize project variables
 init_project_vars
+
+print_script_header "Release Tag Creation" "Gitタグ作成・プッシュによるリリーストリガー"
 
 # Colors for output
 RED='\033[0;31m'

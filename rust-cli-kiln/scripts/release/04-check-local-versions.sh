@@ -1,9 +1,13 @@
 #!/bin/bash
 
-# Version consistency checker for ${PROJECT_NAME} packages
+# Version consistency checker - AI Optimized
 # Ensures all packages have consistent versions
+# NO INTERACTIVE INPUT - Fully automated for AI execution
 
-set -e
+set -euo pipefail
+
+# Disable proxychains for clean execution
+export LD_PRELOAD=
 
 # Load common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -12,7 +16,7 @@ source "$SCRIPT_DIR/../utils/common.sh"
 # Initialize project variables
 init_project_vars
 
-echo "Checking version consistency across ${PROJECT_NAME} packages..."
+print_script_header "Version Consistency Check" "全パッケージのバージョン整合性確認"
 
 # Colors for output
 RED='\033[0;31m'

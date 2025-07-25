@@ -1,0 +1,125 @@
+name: Rust CLI Kiln - Release Build and Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        registry-url: 'https://registry.npmjs.org'
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      
+    - name: Add uv to PATH
+      run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+          
+    - name: Detect project and run build-and-publish
+      env:
+        CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        # This script needs to be run from the actual project directory
+        # Find the project directory (contains Cargo.toml with workspace)
+        for project in diffx diffai lawkit; do
+          if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
+            echo "Found project: $project"
+            cd "../$project"
+            echo "Running build and publish for $project..."
+            ./.github/rust-cli-kiln/scripts/release/05-build-and-publish.sh
+            break
+          fi
+        done
+        
+        if [ ! -f "Cargo.toml" ]; then
+          echo "Error: No project with Cargo.toml found"
+          echo "Available directories:"
+          ls -la ../
+          exit 1
+        fi
+  
+  test-published-packages:
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Wait for package propagation
+      run: |
+        echo "Waiting 60 seconds for packages to propagate across registries..."
+        sleep 60
+        
+    - name: Detect project and test published packages
+      run: |
+        # This script needs to be run from the actual project directory
+        # Find the project directory (contains Cargo.toml with workspace)
+        for project in diffx diffai lawkit; do
+          if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
+            echo "Found project: $project"
+            cd "../$project"
+            echo "Testing published packages for $project..."
+            ./.github/rust-cli-kiln/scripts/testing/08-test-published-packages.sh
+            break
+          fi
+        done
+        
+        if [ ! -f "Cargo.toml" ]; then
+          echo "Error: No project with Cargo.toml found"
+          echo "Available directories:"
+          ls -la ../
+          exit 1
+        fi

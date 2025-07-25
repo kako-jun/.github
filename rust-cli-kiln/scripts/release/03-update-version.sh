@@ -1,12 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
+# Update version across all project files - AI Optimized
+# NO INTERACTIVE INPUT - Fully automated for AI execution
+# REQUIRED ARGUMENT: Version number (X.Y.Z format)
+
+# Disable proxychains for clean execution
+export LD_PRELOAD=
+
+# Check for required argument FIRST
+if [ $# -ne 1 ]; then
+    echo "ERROR: This script requires exactly one argument"
+    echo "Usage: $0 <version>"
+    echo "Example: $0 1.2.3"
+    echo ""
+    echo "The version must be in X.Y.Z format (semantic versioning)"
+    exit 1
+fi
+
+NEW_VERSION="$1"
+
 # Load common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../utils/common.sh"
 
 # Initialize project variables
 init_project_vars
+
+print_script_header "Version Update Script" "全製品コンポーネントのバージョン一括更新"
+echo "Target version: $NEW_VERSION"
 
 # Function to validate version format
 validate_version() {
@@ -95,5 +117,5 @@ main() {
     echo "  - docs/examples/README.md (if version references exist)"
 }
 
-# Run main function
-main "$@"
+# Run main function with the validated NEW_VERSION
+main "$NEW_VERSION"

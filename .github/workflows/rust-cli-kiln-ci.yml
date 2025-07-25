@@ -1,54 +1,81 @@
-name: CI
+name: Rust CLI Kiln - CI Quick Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - '.github/**.md'
   pull_request:
     branches: [ main ]
-  workflow_call:
-    inputs:
-      project-name:
-        description: 'Project name (e.g., diffx, lawkit, diffai)'
-        required: true
-        type: string
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - '.github/**.md'
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build-and-test:
+  quick-check:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout project repository
+    - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Checkout shared repository
-      uses: actions/checkout@v4
-      with:
-        repository: kako-jun/.github
-        path: github-shared
-        
-    - name: Install Rust toolchain
+    - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
       
-    - name: Cache dependencies
-      uses: actions/cache@v4
+    - name: Add uv to PATH
+      run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
       with:
         path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        
-    - name: Verify shared repository structure
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+          
+    - name: Detect project and run quick check
       run: |
-        echo "=== Verifying shared repository structure ==="
-        ls -la github-shared/
-        ls -la github-shared/rust-cli-kiln/
-        ls -la github-shared/rust-cli-kiln/scripts/
+        # This script needs to be run from the actual project directory
+        # Find the project directory (contains Cargo.toml with workspace)
+        for project in diffx diffai lawkit; do
+          if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
+            echo "Found project: $project"
+            cd "../$project"
+            echo "Running quick check for $project..."
+            ./.github/rust-cli-kiln/scripts/testing/quick-check.sh
+            break
+          fi
+        done
         
-    - name: Run CI tests
-      run: |
-        chmod +x ./github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
-        ./github-shared/rust-cli-kiln/scripts/testing/quick-check.sh
+        if [ ! -f "Cargo.toml" ]; then
+          echo "Error: No project with Cargo.toml found"
+          echo "Available directories:"
+          ls -la ../
+          exit 1
+        fi

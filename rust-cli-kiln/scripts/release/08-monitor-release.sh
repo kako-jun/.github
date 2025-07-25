@@ -1,11 +1,43 @@
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 
-# Release monitoring script - correctly handles Act1 -> Act2 workflow
-# Fixes issues with false positive errors and workflow dependency understanding
+# Release monitoring script - AI Optimized
+# Correctly handles release workflow monitoring
+# NO INTERACTIVE INPUT - Fully automated for AI execution
+# REQUIRED ARGUMENT: Version tag (vX.Y.Z format)
 
-# Get project name from current directory
-PROJECT_NAME=$(basename "$(pwd)")
+# Disable proxychains for clean execution
+export LD_PRELOAD=
+
+# Check for required argument FIRST
+if [ $# -ne 1 ]; then
+    echo "ERROR: This script requires exactly one argument"
+    echo "Usage: $0 <version-tag>"
+    echo "Example: $0 v1.2.3"
+    echo ""
+    echo "The version tag must be in vX.Y.Z format"
+    exit 1
+fi
+
+VERSION_TAG="$1"
+
+# Validate version tag format
+if ! [[ "$VERSION_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+    echo "ERROR: Invalid version tag format: $VERSION_TAG"
+    echo "Expected format: vX.Y.Z or vX.Y.Z-tag"
+    echo "Example: v1.2.3 or v1.2.3-beta"
+    exit 1
+fi
+
+# Load common utilities AFTER argument validation
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../utils/common.sh"
+
+# Initialize project variables using common.sh
+init_project_vars
+
+print_script_header "Release Monitoring" "GitHub Actionsの実行状況監視"
+echo "Monitoring tag: $VERSION_TAG"
 
 # Colors for output
 RED='\033[0;31m'

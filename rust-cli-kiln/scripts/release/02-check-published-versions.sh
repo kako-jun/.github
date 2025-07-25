@@ -1,8 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-# Check currently published versions across all package managers
+# Check currently published versions across all package managers - AI Optimized
 # Helps determine what version should be released next
+# NO INTERACTIVE INPUT - Fully automated for AI execution
+
+# Disable proxychains for clean execution
+export LD_PRELOAD=
 
 # Load common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

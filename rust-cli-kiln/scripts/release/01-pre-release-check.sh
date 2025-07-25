@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Comprehensive pre-release check
+# Comprehensive pre-release check - AI Optimized
 # Validates environment, tools, authentication, and git state before release
+# NO INTERACTIVE INPUT - Fully automated for AI execution
+
+# Disable proxychains for clean execution
+export LD_PRELOAD=
 
 # Load common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

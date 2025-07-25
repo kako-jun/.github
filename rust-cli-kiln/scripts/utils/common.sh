@@ -52,3 +52,30 @@ init_project_vars() {
     # Export variables for use in calling script
     export SCRIPT_DIR PROJECT_ROOT PROJECT_NAME
 }
+
+# Check if running in GitHub Actions
+is_github_actions() {
+    [ -n "${GITHUB_ACTIONS:-}" ]
+}
+
+# Get execution environment description
+get_execution_mode() {
+    if is_github_actions; then
+        echo "GitHub Actions"
+    else
+        echo "Local"
+    fi
+}
+
+# Print standardized script header
+print_script_header() {
+    local script_name="$1"
+    local description="$2"
+    
+    echo "=== $script_name - AI Optimized ==="
+    echo "$description"
+    echo "Project: $PROJECT_NAME"
+    echo "Project root: $PROJECT_ROOT"
+    echo "Execution mode: $(get_execution_mode)"
+    echo ""
+}
