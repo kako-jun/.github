@@ -16,6 +16,12 @@ on:
         - diffx
         - diffai
         - lawkit
+  workflow_call:
+    inputs:
+      project:
+        description: 'Project to test'
+        required: true
+        type: string
 
 jobs:
   test-matrix:
