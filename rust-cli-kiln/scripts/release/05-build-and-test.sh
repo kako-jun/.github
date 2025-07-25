@@ -200,10 +200,10 @@ main() {
         fi
         
         cd "$PROJECT_ROOT"
-    elif [ -d "$PROJECT_ROOT/${PROJECT_NAME}-npm" ] && command -v node &> /dev/null; then
+    elif [ -d "$PROJECT_ROOT/${PROJECT_NAME}-js" ] && command -v node &> /dev/null; then
         # Fallback to old npm directory name
         print_info "Step 7: Testing npm package (legacy directory)..."
-        cd "$PROJECT_ROOT/${PROJECT_NAME}-npm"
+        cd "$PROJECT_ROOT/${PROJECT_NAME}-js"
         
         # Validate package.json
         if node -e "require('./package.json')" 2>/dev/null; then
@@ -214,7 +214,7 @@ main() {
                 print_warning "  npm publish dry run failed - check package.json"
             fi
         else
-            print_warning "  Invalid package.json in ${PROJECT_NAME}-npm"
+            print_warning "  Invalid package.json in ${PROJECT_NAME}-js"
         fi
         
         cd "$PROJECT_ROOT"

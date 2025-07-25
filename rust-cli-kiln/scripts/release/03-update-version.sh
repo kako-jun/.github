@@ -62,15 +62,15 @@ update_version_in_file() {
 # Function to update npm package version
 update_npm_version() {
     local new_version=$1
-    local package_json="$PROJECT_ROOT/${PROJECT_NAME}-npm/package.json"
+    local package_json="$PROJECT_ROOT/${PROJECT_NAME}-js/package.json"
     
     if [ -f "$package_json" ]; then
-        echo "Updating version in ${PROJECT_NAME}-npm/package.json"
-        cd "$PROJECT_ROOT/${PROJECT_NAME}-npm"
+        echo "Updating version in ${PROJECT_NAME}-js/package.json"
+        cd "$PROJECT_ROOT/${PROJECT_NAME}-js"
         npm version "$new_version" --no-git-tag-version
         cd "$PROJECT_ROOT"
     else
-        echo "WARNING: ${PROJECT_NAME}-npm/package.json not found"
+        echo "WARNING: ${PROJECT_NAME}-js/package.json not found"
     fi
 }
 

@@ -131,7 +131,7 @@ publish_rust_packages() {
 publish_npm_package() {
     info "=== Publishing npm Package ==="
     
-    cd "${PROJECT_NAME}-npm" || cd "${PROJECT_NAME}-js"
+    cd "${PROJECT_NAME}-js"
     
     if is_github_actions; then
         if npm publish; then
