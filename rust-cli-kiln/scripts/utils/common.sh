@@ -84,6 +84,96 @@ detect_project_for_workflow() {
     return 1
 }
 
+# Setup unified environment for GitHub Actions workflows
+# This ensures we have:
+# 1. Project repository checked out
+# 2. rust-cli-kiln available (via symlink or actual directory)
+# 3. Current directory set to project root
+setup_github_actions_env() {
+    local project_name="${1:-}"
+    
+    # Detect project name if not provided
+    if [ -z "$project_name" ]; then
+        # For workflow_call
+        if [ -n "${WORKFLOW_CALL_PROJECT:-}" ]; then
+            project_name="$WORKFLOW_CALL_PROJECT"
+        # For workflow_dispatch
+        elif [ -n "${WORKFLOW_DISPATCH_PROJECT:-}" ]; then
+            project_name="$WORKFLOW_DISPATCH_PROJECT"
+        # Auto-detect
+        else
+            project_name=$(detect_project_for_workflow)
+            if [ $? -ne 0 ]; then
+                echo "Error: Could not determine project name"
+                return 1
+            fi
+        fi
+    fi
+    
+    echo "Setting up environment for project: $project_name"
+    
+    # Check if we're already in the project directory
+    if [ -f "Cargo.toml" ] && grep -q "name = \"$project_name\"" Cargo.toml 2>/dev/null; then
+        echo "Already in $project_name directory"
+        
+        # Ensure rust-cli-kiln is available
+        if [ ! -d ".github/rust-cli-kiln" ]; then
+            echo "Setting up rust-cli-kiln symlink..."
+            # If we're in a workflow from .github repo, rust-cli-kiln should be available
+            if [ -d "rust-cli-kiln" ]; then
+                # We're in .github repo
+                mkdir -p .github
+                ln -s "$(pwd)/rust-cli-kiln" .github/rust-cli-kiln
+            else
+                # Clone .github repo to get rust-cli-kiln
+                echo "Cloning .github repository for rust-cli-kiln..."
+                git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+                mkdir -p .github
+                ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
+            fi
+        fi
+    else
+        # We need to navigate to the project directory
+        # This happens when workflow runs from .github repo
+        echo "Navigating to project directory..."
+        
+        # Check if project exists as sibling directory
+        if [ -d "../$project_name" ]; then
+            cd "../$project_name"
+        else
+            echo "Error: Project directory not found"
+            return 1
+        fi
+        
+        # Setup rust-cli-kiln symlink
+        if [ ! -d ".github/rust-cli-kiln" ]; then
+            echo "Setting up rust-cli-kiln symlink..."
+            # The .github repo should be in the parent directory
+            if [ -d "../.github/rust-cli-kiln" ]; then
+                mkdir -p .github
+                ln -s "$(cd ../.. && pwd)/.github/rust-cli-kiln" .github/rust-cli-kiln
+            else
+                # Clone as fallback
+                git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+                mkdir -p .github
+                ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
+            fi
+        fi
+    fi
+    
+    # Verify setup
+    echo "Environment setup complete:"
+    echo "  Current directory: $(pwd)"
+    echo "  Project: $project_name"
+    echo "  rust-cli-kiln available: $([ -d ".github/rust-cli-kiln" ] && echo "Yes" || echo "No")"
+    
+    # Export for use by scripts
+    export PROJECT_NAME="$project_name"
+    export PROJECT_ROOT="$(pwd)"
+    
+    return 0
+}
+
 # Check if running in GitHub Actions
 is_github_actions() {
     [ -n "${GITHUB_ACTIONS:-}" ]

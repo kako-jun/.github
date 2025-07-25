@@ -63,18 +63,6 @@ jobs:
         repository: ${{ github.event_name == 'workflow_call' && format('kako-jun/{0}', inputs.project) || github.repository }}
         ref: ${{ github.ref }}
         
-    - name: Setup rust-cli-kiln symlink (for workflow_call)
-      if: github.event_name == 'workflow_call'
-      run: |
-        # Clone the .github repository to get rust-cli-kiln scripts
-        git clone https://github.com/kako-jun/.github.git /tmp/github-repo
-        
-        # Create symlink to rust-cli-kiln
-        mkdir -p .github
-        ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
-        
-        # Verify symlink
-        ls -la .github/rust-cli-kiln/scripts/
       
     - name: Set up QEMU (for ARM64 emulation on Linux)
       if: matrix.os == 'ubuntu-latest' && matrix.arch == 'arm64'
@@ -95,52 +83,59 @@ jobs:
       with:
         python-version: '3.11'
         
-    - name: Test published packages - diffx
-      if: (github.event.inputs.project == 'diffx' || github.event.inputs.project == 'all' || github.event_name == 'schedule') || (github.event_name == 'workflow_call' && inputs.project == 'diffx')
+    - name: Test published packages
       run: |
+        # Determine which projects to test
+        PROJECTS_TO_TEST=""
+        
         if [ "${{ github.event_name }}" = "workflow_call" ]; then
-          # For workflow_call, we're already in the project directory
-          echo "Testing published packages for diffx on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
-        elif [ -d "../diffx" ] && [ -f "../diffx/Cargo.toml" ]; then
-          cd "../diffx"
-          echo "Testing published packages for diffx on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
-        else
-          echo "diffx project not found, skipping..."
+          PROJECTS_TO_TEST="${{ inputs.project }}"
+        elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ github.event.inputs.project }}" = "all" ]; then
+            PROJECTS_TO_TEST="diffx diffai lawkit"
+          else
+            PROJECTS_TO_TEST="${{ github.event.inputs.project }}"
+          fi
+        elif [ "${{ github.event_name }}" = "schedule" ]; then
+          PROJECTS_TO_TEST="diffx diffai lawkit"
         fi
-      shell: bash
-      
-    - name: Test published packages - diffai
-      if: (github.event.inputs.project == 'diffai' || github.event.inputs.project == 'all' || github.event_name == 'schedule') || (github.event_name == 'workflow_call' && inputs.project == 'diffai')
-      run: |
-        if [ "${{ github.event_name }}" = "workflow_call" ]; then
-          # For workflow_call, we're already in the project directory
-          echo "Testing published packages for diffai on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
-        elif [ -d "../diffai" ] && [ -f "../diffai/Cargo.toml" ]; then
-          cd "../diffai"
-          echo "Testing published packages for diffai on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
+        
+        # Source common.sh
+        if [ -d "rust-cli-kiln" ]; then
+          source rust-cli-kiln/scripts/utils/common.sh
+        elif [ -d ".github/rust-cli-kiln" ]; then
+          source .github/rust-cli-kiln/scripts/utils/common.sh
         else
-          echo "diffai project not found, skipping..."
+          git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+          source /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh
         fi
-      shell: bash
-      
-    - name: Test published packages - lawkit
-      if: (github.event.inputs.project == 'lawkit' || github.event.inputs.project == 'all' || github.event_name == 'schedule') || (github.event_name == 'workflow_call' && inputs.project == 'lawkit')
-      run: |
-        if [ "${{ github.event_name }}" = "workflow_call" ]; then
-          # For workflow_call, we're already in the project directory
-          echo "Testing published packages for lawkit on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
-        elif [ -d "../lawkit" ] && [ -f "../lawkit/Cargo.toml" ]; then
-          cd "../lawkit"
-          echo "Testing published packages for lawkit on ${{ matrix.platform }}..."
-          ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
-        else
-          echo "lawkit project not found, skipping..."
-        fi
+        
+        # Test each project
+        for PROJECT in $PROJECTS_TO_TEST; do
+          echo "======================================"
+          echo "Testing $PROJECT on ${{ matrix.platform }}"
+          echo "======================================"
+          
+          # Save current directory
+          SAVED_DIR=$(pwd)
+          
+          # Setup environment for this project
+          if [ "${{ github.event_name }}" = "workflow_call" ]; then
+            export WORKFLOW_CALL_PROJECT="$PROJECT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            export WORKFLOW_DISPATCH_PROJECT="$PROJECT"
+          fi
+          
+          if setup_github_actions_env "$PROJECT"; then
+            echo "Testing published packages for $PROJECT on ${{ matrix.platform }}..."
+            ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
+          else
+            echo "$PROJECT project not found or setup failed, skipping..."
+          fi
+          
+          # Return to saved directory for next project
+          cd "$SAVED_DIR"
+        done
       shell: bash
       
     - name: Upload test results
