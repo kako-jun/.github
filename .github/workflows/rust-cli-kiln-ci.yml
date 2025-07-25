@@ -88,6 +88,5 @@ jobs:
         fi
         
         setup_github_actions_env
-        cd "$PROJECT_ROOT"
         
         ./.github/rust-cli-kiln/scripts/release/05-build-and-test.sh
