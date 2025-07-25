@@ -113,7 +113,12 @@ setup_github_actions_env() {
     echo "Setting up environment for project: $project_name"
     
     # Check if we're already in the project directory
-    if [ -f "Cargo.toml" ] && grep -q "name = \"$project_name\"" Cargo.toml 2>/dev/null; then
+    # For workspace projects, check if it contains the expected members
+    if [ -f "Cargo.toml" ] && (
+        grep -q "name = \"$project_name\"" Cargo.toml 2>/dev/null || \
+        grep -q "\"$project_name-core\"" Cargo.toml 2>/dev/null || \
+        grep -q "\"$project_name-cli\"" Cargo.toml 2>/dev/null
+    ); then
         echo "Already in $project_name directory"
         
         # Ensure rust-cli-kiln is available
