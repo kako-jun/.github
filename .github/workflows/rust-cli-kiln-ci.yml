@@ -75,21 +75,32 @@ jobs:
           export WORKFLOW_DISPATCH_PROJECT="${{ github.event.inputs.project-name }}"
         fi
         
+        # Debug: Check current directory and files
+        echo "Current directory: $(pwd)"
+        echo "Directory contents:"
+        ls -la
+        
         # Source common.sh and setup environment
         if [ -d "rust-cli-kiln" ]; then
           # We're in .github repo
+          echo "Sourcing from rust-cli-kiln/scripts/utils/common.sh"
           source rust-cli-kiln/scripts/utils/common.sh
         elif [ -d ".github/rust-cli-kiln" ]; then
           # We're in project repo
+          echo "Sourcing from .github/rust-cli-kiln/scripts/utils/common.sh"
           source .github/rust-cli-kiln/scripts/utils/common.sh
         else
           # Clone and source
+          echo "Cloning .github repository..."
           git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+          echo "Sourcing from /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh"
           source /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh
         fi
         
+        echo "About to call setup_github_actions_env..."
         # Setup unified environment
         setup_github_actions_env
+        echo "setup_github_actions_env completed with exit code: $?"
         
         # Run build and test
         echo "Running build and test for $PROJECT_NAME..."
