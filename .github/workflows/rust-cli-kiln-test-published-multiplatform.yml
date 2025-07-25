@@ -106,7 +106,9 @@ jobs:
         elif [ -d ".github/rust-cli-kiln" ]; then
           source .github/rust-cli-kiln/scripts/utils/common.sh
         else
-          git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+          if [ ! -d "/tmp/github-repo" ]; then
+            git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+          fi
           source /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh
         fi
         

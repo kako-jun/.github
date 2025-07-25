@@ -131,8 +131,10 @@ setup_github_actions_env() {
                 ln -s "$(pwd)/rust-cli-kiln" .github/rust-cli-kiln
             else
                 # Clone .github repo to get rust-cli-kiln
-                echo "Cloning .github repository for rust-cli-kiln..."
-                git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+                echo "Setting up .github repository for rust-cli-kiln..."
+                if [ ! -d "/tmp/github-repo" ]; then
+                    git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+                fi
                 mkdir -p .github
                 ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
             fi
@@ -159,7 +161,9 @@ setup_github_actions_env() {
                 ln -s "$(cd ../.. && pwd)/.github/rust-cli-kiln" .github/rust-cli-kiln
             else
                 # Clone as fallback
-                git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+                if [ ! -d "/tmp/github-repo" ]; then
+                    git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+                fi
                 mkdir -p .github
                 ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
             fi

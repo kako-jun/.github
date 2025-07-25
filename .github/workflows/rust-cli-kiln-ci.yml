@@ -91,8 +91,10 @@ jobs:
           source .github/rust-cli-kiln/scripts/utils/common.sh
         else
           # Clone and source
-          echo "Cloning .github repository..."
-          git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+          echo "Setting up .github repository..."
+          if [ ! -d "/tmp/github-repo" ]; then
+            git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+          fi
           echo "Sourcing from /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh"
           source /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh
         fi
