@@ -27,11 +27,8 @@ find_project_root() {
 
 # Initialize project root and name
 init_project_vars() {
-    # If variables are already set by setup_github_actions_env, just cd to the correct directory
-    if [ -n "${PROJECT_ROOT:-}" ] && [ -n "${PROJECT_NAME:-}" ]; then
-        echo "Project variables already initialized by setup_github_actions_env"
-        echo "  Project: $PROJECT_NAME"
-        echo "  Project root: $PROJECT_ROOT"
+    # If already initialized by setup_github_actions_env, just cd there
+    if [ -n "${PROJECT_ROOT:-}" ]; then
         cd "$PROJECT_ROOT"
         return 0
     fi
@@ -40,25 +37,19 @@ init_project_vars() {
     if [ -n "${BASH_SOURCE[1]:-}" ]; then
         SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
     else
-        # Fallback for direct execution
         SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
     fi
     
     # Determine project root
     if [ -f "./Cargo.toml" ]; then
-        # Already in project root (GitHub Actions case)
         PROJECT_ROOT="$(pwd)"
     else
-        # Find project root (local execution case)
         PROJECT_ROOT="$(find_project_root "$SCRIPT_DIR")"
     fi
     
     PROJECT_NAME=$(basename "$PROJECT_ROOT")
-    
-    # Change to project root
     cd "$PROJECT_ROOT"
     
-    # Export variables for use in calling script
     export SCRIPT_DIR PROJECT_ROOT PROJECT_NAME
 }
 
