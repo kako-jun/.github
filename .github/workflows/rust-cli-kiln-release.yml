@@ -21,6 +21,23 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        repository: ${{ github.event_name == 'workflow_call' && format('kako-jun/{0}', inputs.project-name) || github.repository }}
+        ref: ${{ github.ref }}
+        
+    - name: Setup rust-cli-kiln symlink (for workflow_call)
+      if: github.event_name == 'workflow_call'
+      run: |
+        # Clone the .github repository to get rust-cli-kiln scripts
+        git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+        
+        # Create symlink to rust-cli-kiln
+        mkdir -p .github
+        ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
+        
+        # Verify symlink
+        ls -la .github/
+        ls -la .github/rust-cli-kiln/scripts/release/
       
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
@@ -86,7 +103,15 @@ jobs:
         fi
         
         # Navigate to project directory
-        if [ -n "$PROJECT_NAME" ] && [ -d "../$PROJECT_NAME" ] && [ -f "../$PROJECT_NAME/Cargo.toml" ]; then
+        if [ "${{ github.event_name }}" = "workflow_call" ]; then
+          # For workflow_call, we're already in the project directory
+          if [ ! -f "Cargo.toml" ]; then
+            echo "Error: Not in project directory (workflow_call)"
+            pwd
+            ls -la
+            exit 1
+          fi
+        elif [ -n "$PROJECT_NAME" ] && [ -d "../$PROJECT_NAME" ] && [ -f "../$PROJECT_NAME/Cargo.toml" ]; then
           cd "../$PROJECT_NAME"
         else
           echo "Error: Project not found or invalid: $PROJECT_NAME"

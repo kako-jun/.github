@@ -13,6 +13,16 @@ on:
       - '*.md'
       - 'docs/**'
       - '.github/**.md'
+  workflow_dispatch:
+    inputs:
+      project-name:
+        description: 'Project to run CI for'
+        required: true
+        type: choice
+        options:
+        - diffx
+        - diffai
+        - lawkit
   workflow_call:
     inputs:
       project-name:
@@ -30,6 +40,22 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        repository: ${{ (github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch') && format('kako-jun/{0}', inputs.project-name) || github.repository }}
+        ref: ${{ github.ref }}
+        
+    - name: Setup rust-cli-kiln symlink (for workflow_call or workflow_dispatch)
+      if: github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch'
+      run: |
+        # Clone the .github repository to get rust-cli-kiln scripts
+        git clone https://github.com/kako-jun/.github.git /tmp/github-repo
+        
+        # Create symlink to rust-cli-kiln
+        mkdir -p .github
+        ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
+        
+        # Verify symlink
+        ls -la .github/rust-cli-kiln/scripts/
       
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
@@ -67,21 +93,36 @@ jobs:
           
     - name: Detect project and run quick check
       run: |
-        # This script needs to be run from the actual project directory
-        # Find the project directory (contains Cargo.toml with workspace)
-        for project in diffx diffai lawkit; do
-          if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
-            echo "Found project: $project"
-            cd "../$project"
-            echo "Running quick check for $project..."
-            ./.github/rust-cli-kiln/scripts/testing/quick-check.sh
-            break
+        # Determine project and navigate to correct directory
+        if [ "${{ github.event_name }}" = "workflow_call" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          # For workflow_call or workflow_dispatch, we're already in the project directory
+          PROJECT_NAME="${{ inputs.project-name }}"
+          echo "Using project from workflow_call/workflow_dispatch: $PROJECT_NAME"
+          
+          if [ ! -f "Cargo.toml" ]; then
+            echo "Error: Not in project directory (workflow_call/workflow_dispatch)"
+            pwd
+            ls -la
+            exit 1
           fi
-        done
-        
-        if [ ! -f "Cargo.toml" ]; then
-          echo "Error: No project with Cargo.toml found"
-          echo "Available directories:"
-          ls -la ../
-          exit 1
+        else
+          # Auto-detect from directory structure
+          for project in diffx diffai lawkit; do
+            if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
+              PROJECT_NAME="$project"
+              echo "Found project: $PROJECT_NAME"
+              cd "../$PROJECT_NAME"
+              break
+            fi
+          done
+          
+          if [ ! -f "Cargo.toml" ]; then
+            echo "Error: No project with Cargo.toml found"
+            echo "Available directories:"
+            ls -la ../
+            exit 1
+          fi
         fi
+        
+        echo "Running quick check for $PROJECT_NAME..."
+        ./.github/rust-cli-kiln/scripts/testing/quick-check.sh
