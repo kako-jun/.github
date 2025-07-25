@@ -1,4 +1,4 @@
-name: Rust CLI Kiln - CI Quick Check
+name: Rust CLI Kiln - CI Build and Test
 
 on:
   push:
@@ -54,8 +54,12 @@ jobs:
         mkdir -p .github
         ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
         
-        # Verify symlink
-        ls -la .github/rust-cli-kiln/scripts/
+        # Verify current directory and contents
+        echo "Current directory: $(pwd)"
+        echo "Contents:"
+        ls -la
+        echo "Cargo.toml check:"
+        cat Cargo.toml | head -5 || echo "No Cargo.toml found"
       
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
