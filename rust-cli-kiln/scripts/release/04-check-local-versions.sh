@@ -46,8 +46,8 @@ WORKSPACE_VERSION=$(grep '^version = ' "$PROJECT_ROOT/Cargo.toml" | head -1 | cu
 CORE_VERSION=$WORKSPACE_VERSION
 CLI_VERSION=$WORKSPACE_VERSION
 
-if [ -f "$PROJECT_ROOT/${PROJECT_NAME}-npm/package.json" ]; then
-    NPM_VERSION=$(node -p "require('$PROJECT_ROOT/${PROJECT_NAME}-npm/package.json').version" 2>/dev/null || echo "unknown")
+if [ -f "$PROJECT_ROOT/${PROJECT_NAME}-js/package.json" ]; then
+    NPM_VERSION=$(node -p "require('$PROJECT_ROOT/${PROJECT_NAME}-js/package.json').version" 2>/dev/null || echo "unknown")
 else
     NPM_VERSION="not found"
 fi
@@ -86,7 +86,7 @@ fi
 
 # Check if wrapper packages exist and have valid versions
 if [ "$NPM_VERSION" = "not found" ]; then
-    warning "npm package not found (${PROJECT_NAME}-npm/package.json missing)"
+    warning "npm package not found (${PROJECT_NAME}-js/package.json missing)"
 elif [ "$NPM_VERSION" = "unknown" ]; then
     error "npm package version could not be determined"
     ISSUES_FOUND=$((ISSUES_FOUND + 1))
