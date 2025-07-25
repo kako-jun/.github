@@ -34,7 +34,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  quick-check:
+  build-and-test:
     runs-on: ubuntu-latest
     
     steps:
@@ -42,7 +42,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ${{ (github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch') && format('kako-jun/{0}', inputs.project-name) || github.repository }}
-        ref: ${{ github.ref }}
+        ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.ref }}
         
     - name: Setup rust-cli-kiln symlink (for workflow_call or workflow_dispatch)
       if: github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch'
@@ -91,7 +91,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cargo-
           
-    - name: Detect project and run quick check
+    - name: Detect project and run build-and-test
       run: |
         # Determine project and navigate to correct directory
         if [ "${{ github.event_name }}" = "workflow_call" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -124,5 +124,5 @@ jobs:
           fi
         fi
         
-        echo "Running quick check for $PROJECT_NAME..."
+        echo "Running build and test for $PROJECT_NAME..."
         ./.github/rust-cli-kiln/scripts/release/05-build-and-test.sh
