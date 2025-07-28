@@ -64,6 +64,18 @@ jobs:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
         
+    - name: Checkout .github repository
+      uses: actions/checkout@v4
+      with:
+        repository: kako-jun/.github
+        path: .github
+        
+    - name: Create github-shared symlink
+      run: |
+        # Create the symlink using the provided script
+        chmod +x scripts/utils/create-github-shared-symlink.sh
+        ./scripts/utils/create-github-shared-symlink.sh
+        
     - name: Setup environment and run build-test-publish sequence
       env:
         CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
@@ -74,20 +86,8 @@ jobs:
         # Setup environment variables for workflow type
         export WORKFLOW_CALL_PROJECT="${{ inputs.project-name }}"
         
-        # Source common.sh and setup environment
-        if [ -d "rust-cli-kiln" ]; then
-          # We're in .github repo
-          source rust-cli-kiln/scripts/utils/common.sh
-        elif [ -d ".github/rust-cli-kiln" ]; then
-          # We're in project repo
-          source .github/rust-cli-kiln/scripts/utils/common.sh
-        else
-          # Clone and source
-          if [ ! -d "/tmp/github-repo" ]; then
-            git clone https://github.com/kako-jun/.github.git /tmp/github-repo
-          fi
-          source /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh
-        fi
+        # Source common.sh from the symlinked .github
+        source github-shared/rust-cli-kiln/scripts/utils/common.sh
         
         # Setup unified environment
         setup_github_actions_env
@@ -97,10 +97,10 @@ jobs:
         uv pip install maturin wheel build twine
         
         echo "Step 1: Running comprehensive build and test..."
-        ./.github/rust-cli-kiln/scripts/release/05-build-and-test.sh
+        github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh
         
         echo "Step 2: Running atomic publish (same environment)..."
-        ./.github/rust-cli-kiln/scripts/release/06-publish.sh
+        github-shared/rust-cli-kiln/scripts/release/06-publish.sh
   
   test-published-packages:
     needs: build-and-publish

@@ -68,22 +68,25 @@ jobs:
       with:
         python-version: '3.11'
         
+    - name: Checkout .github repository
+      uses: actions/checkout@v4
+      with:
+        repository: kako-jun/.github
+        path: .github
+        
+    - name: Create github-shared symlink
+      run: |
+        # Create the symlink using the provided script
+        chmod +x scripts/utils/create-github-shared-symlink.sh
+        ./scripts/utils/create-github-shared-symlink.sh
+        
     - name: Test published packages
       run: |
         # Determine which projects to test
         PROJECTS_TO_TEST="${{ inputs.project }}"
         
-        # Source common.sh
-        if [ -d "rust-cli-kiln" ]; then
-          source rust-cli-kiln/scripts/utils/common.sh
-        elif [ -d ".github/rust-cli-kiln" ]; then
-          source .github/rust-cli-kiln/scripts/utils/common.sh
-        else
-          if [ ! -d "/tmp/github-repo" ]; then
-            git clone https://github.com/kako-jun/.github.git /tmp/github-repo
-          fi
-          source /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh
-        fi
+        # Source common.sh from the symlinked .github
+        source github-shared/rust-cli-kiln/scripts/utils/common.sh
         
         # Test each project
         for PROJECT in $PROJECTS_TO_TEST; do
@@ -99,7 +102,7 @@ jobs:
           
           if setup_github_actions_env "$PROJECT"; then
             echo "Testing published packages for $PROJECT on ${{ matrix.platform }}..."
-            ./.github/rust-cli-kiln/scripts/release/09-test-published-packages.sh
+            github-shared/rust-cli-kiln/scripts/release/09-test-published-packages.sh
           else
             echo "$PROJECT project not found or setup failed, skipping..."
           fi

@@ -56,23 +56,26 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cargo-
           
+    - name: Checkout .github repository
+      uses: actions/checkout@v4
+      with:
+        repository: kako-jun/.github
+        path: .github
+        
+    - name: Create github-shared symlink
+      run: |
+        # Create the symlink using the provided script
+        chmod +x scripts/utils/create-github-shared-symlink.sh
+        ./scripts/utils/create-github-shared-symlink.sh
+        
     - name: Setup environment and run build-and-test
       run: |
         # Setup environment variables for workflow type
         export WORKFLOW_CALL_PROJECT="${{ inputs.project-name }}"
         
-        # Source common.sh and setup environment
-        if [ -d "rust-cli-kiln" ]; then
-          source rust-cli-kiln/scripts/utils/common.sh
-        elif [ -d ".github/rust-cli-kiln" ]; then
-          source .github/rust-cli-kiln/scripts/utils/common.sh
-        else
-          if [ ! -d "/tmp/github-repo" ]; then
-            git clone https://github.com/kako-jun/.github.git /tmp/github-repo
-          fi
-          source /tmp/github-repo/rust-cli-kiln/scripts/utils/common.sh
-        fi
+        # Source common.sh from the symlinked .github
+        source github-shared/rust-cli-kiln/scripts/utils/common.sh
         
         setup_github_actions_env
         
-        ./.github/rust-cli-kiln/scripts/release/05-build-and-test.sh
+        github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh
