@@ -122,7 +122,14 @@ main() {
         uv sync --frozen
         
         # Build Python package with maturin
-        if uv run maturin build --release > /dev/null 2>&1; then
+        # Use compatibility off for local development, let GitHub Actions handle manylinux
+        if [ -n "${GITHUB_ACTIONS:-}" ]; then
+            MATURIN_ARGS="--release"
+        else
+            MATURIN_ARGS="--release --compatibility off"
+        fi
+        
+        if uv run maturin build $MATURIN_ARGS > /dev/null 2>&1; then
             print_success "  ✓ Python package build passed (with uv)"
             
             # Install and test the built package

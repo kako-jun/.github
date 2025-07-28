@@ -1,199 +1,67 @@
 #!/bin/bash
 
-# Common utility functions for rust-cli-kiln scripts
+# Common utility functions for rust-cli-kiln scripts (Simplified version)
 
-# Function to find project root by looking for Cargo.toml
-find_project_root() {
-    local current_dir="$1"
-    
-    # Check if Cargo.toml exists in current directory
-    if [ -f "$current_dir/Cargo.toml" ]; then
-        echo "$current_dir"
-        return 0
-    fi
-    
-    # Check parent directories up to 5 levels
-    for i in {1..5}; do
-        current_dir="$(dirname "$current_dir")"
-        if [ -f "$current_dir/Cargo.toml" ]; then
-            echo "$current_dir"
-            return 0
-        fi
-    done
-    
-    # If not found, fall back to script-relative path (for legacy compatibility)
-    echo "$(cd "$SCRIPT_DIR/../.." && pwd)"
+# Get project name from current directory (unified for local and GitHub Actions)
+get_project_name() {
+    basename "$(pwd)"
 }
 
-# Initialize project root and name
-init_project_vars() {
-    # If already initialized by setup_github_actions_env, don't reinitialize
-    if [ -n "${PROJECT_ROOT:-}" ]; then
-        return 0
-    fi
-    
-    # Use the calling script's directory
-    if [ -n "${BASH_SOURCE[1]:-}" ]; then
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
+# Get execution mode (local vs github-actions)
+get_execution_mode() {
+    if [ -n "${GITHUB_ACTIONS:-}" ]; then
+        echo "github-actions"
     else
-        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+        echo "local"
     fi
-    
-    # Determine project root
-    if [ -f "./Cargo.toml" ]; then
-        PROJECT_ROOT="$(pwd)"
-    else
-        PROJECT_ROOT="$(find_project_root "$SCRIPT_DIR")"
-    fi
-    
-    PROJECT_NAME=$(basename "$PROJECT_ROOT")
-    cd "$PROJECT_ROOT"
-    
-    export SCRIPT_DIR PROJECT_ROOT PROJECT_NAME
 }
 
-# Auto-detect project name for GitHub Actions workflows
-detect_project_for_workflow() {
-    local input_project="${1:-}"
+# Simple unified environment setup for both local and GitHub Actions
+# Assumes current directory is project root (diffx, lawkit, diffai)
+setup_unified_env() {
+    # Simple: project name is current directory name
+    PROJECT_NAME=$(get_project_name)
+    PROJECT_ROOT="$(pwd)"
     
-    # Use provided project name if available
-    if [ -n "$input_project" ]; then
-        echo "$input_project"
-        return 0
+    echo "Setting up unified environment:"
+    echo "  Project: $PROJECT_NAME"
+    echo "  Project root: $PROJECT_ROOT"
+    echo "  Execution mode: $(get_execution_mode)"
+    
+    # Verify we're in a valid project directory
+    if [ ! -f "Cargo.toml" ]; then
+        echo "Error: No Cargo.toml found in current directory"
+        echo "Please run from project root (diffx, lawkit, or diffai)"
+        return 1
     fi
     
-    # Auto-detect from repository name
-    if [ -n "${GITHUB_REPOSITORY:-}" ]; then
-        local repo_name=$(basename "$GITHUB_REPOSITORY")
-        if [[ "$repo_name" =~ ^(diffx|diffai|lawkit)$ ]]; then
-            echo "$repo_name"
-            return 0
-        fi
+    # Verify github-shared symlink exists
+    if [ ! -d "github-shared" ]; then
+        echo "Error: github-shared symlink not found"
+        echo "Please run scripts/utils/create-github-shared-symlink.sh first"
+        return 1
     fi
-    
-    # Try to detect from directory structure
-    for project in diffx diffai lawkit; do
-        if [ -d "../$project" ] && [ -f "../$project/Cargo.toml" ]; then
-            echo "$project"
-            return 0
-        fi
-    done
-    
-    # No project found
-    return 1
-}
-
-# Setup unified environment for GitHub Actions workflows
-# This ensures we have:
-# 1. Project repository checked out
-# 2. rust-cli-kiln available (via symlink or actual directory)
-# 3. Current directory set to project root
-setup_github_actions_env() {
-    local project_name="${1:-}"
-    
-    # Detect project name if not provided
-    if [ -z "$project_name" ]; then
-        # For workflow_call
-        if [ -n "${WORKFLOW_CALL_PROJECT:-}" ]; then
-            project_name="$WORKFLOW_CALL_PROJECT"
-        # For workflow_dispatch
-        elif [ -n "${WORKFLOW_DISPATCH_PROJECT:-}" ]; then
-            project_name="$WORKFLOW_DISPATCH_PROJECT"
-        # Auto-detect
-        else
-            project_name=$(detect_project_for_workflow)
-            if [ $? -ne 0 ]; then
-                echo "Error: Could not determine project name"
-                return 1
-            fi
-        fi
-    fi
-    
-    echo "Setting up environment for project: $project_name"
-    
-    # Check if we're already in the project directory
-    # For workspace projects, check if it contains the expected members
-    if [ -f "Cargo.toml" ] && (
-        grep -q "name = \"$project_name\"" Cargo.toml 2>/dev/null || \
-        grep -q "\"$project_name-core\"" Cargo.toml 2>/dev/null || \
-        grep -q "\"$project_name-cli\"" Cargo.toml 2>/dev/null
-    ); then
-        echo "Already in $project_name directory"
-        
-        # Ensure rust-cli-kiln is available
-        if [ ! -d ".github/rust-cli-kiln" ]; then
-            echo "Setting up rust-cli-kiln symlink..."
-            # If we're in a workflow from .github repo, rust-cli-kiln should be available
-            if [ -d "rust-cli-kiln" ]; then
-                # We're in .github repo
-                mkdir -p .github
-                ln -s "$(pwd)/rust-cli-kiln" .github/rust-cli-kiln
-            else
-                # Clone .github repo to get rust-cli-kiln
-                echo "Setting up .github repository for rust-cli-kiln..."
-                if [ ! -d "/tmp/github-repo" ]; then
-                    git clone https://github.com/kako-jun/.github.git /tmp/github-repo
-                fi
-                mkdir -p .github
-                ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
-            fi
-        fi
-    else
-        # We need to navigate to the project directory
-        # This happens when workflow runs from .github repo
-        echo "Navigating to project directory..."
-        
-        # Check if project exists as sibling directory
-        if [ -d "../$project_name" ]; then
-            cd "../$project_name"
-        else
-            echo "Error: Project directory not found"
-            return 1
-        fi
-        
-        # Setup rust-cli-kiln symlink
-        if [ ! -d ".github/rust-cli-kiln" ]; then
-            echo "Setting up rust-cli-kiln symlink..."
-            # The .github repo should be in the parent directory
-            if [ -d "../.github/rust-cli-kiln" ]; then
-                mkdir -p .github
-                ln -s "$(cd ../.. && pwd)/.github/rust-cli-kiln" .github/rust-cli-kiln
-            else
-                # Clone as fallback
-                if [ ! -d "/tmp/github-repo" ]; then
-                    git clone https://github.com/kako-jun/.github.git /tmp/github-repo
-                fi
-                mkdir -p .github
-                ln -s /tmp/github-repo/rust-cli-kiln .github/rust-cli-kiln
-            fi
-        fi
-    fi
-    
-    # Verify setup
-    echo "Environment setup complete:"
-    echo "  Current directory: $(pwd)"
-    echo "  Project: $project_name"
-    echo "  rust-cli-kiln available: $([ -d ".github/rust-cli-kiln" ] && echo "Yes" || echo "No")"
     
     # Export for use by scripts
-    export PROJECT_NAME="$project_name"
-    export PROJECT_ROOT="$(pwd)"
+    export PROJECT_NAME PROJECT_ROOT
     
+    echo "✅ Environment setup complete"
     return 0
+}
+
+# Legacy alias for backward compatibility
+setup_github_actions_env() {
+    setup_unified_env "$@"
+}
+
+# Initialize project variables (legacy compatibility)
+init_project_vars() {
+    setup_unified_env
 }
 
 # Check if running in GitHub Actions
 is_github_actions() {
     [ -n "${GITHUB_ACTIONS:-}" ]
-}
-
-# Get execution environment description
-get_execution_mode() {
-    if is_github_actions; then
-        echo "GitHub Actions"
-    else
-        echo "Local"
-    fi
 }
 
 # Print standardized script header
