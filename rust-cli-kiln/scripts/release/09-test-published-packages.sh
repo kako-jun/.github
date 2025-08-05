@@ -40,7 +40,7 @@ print_warning() {
 }
 
 detect_os_arch() {
-    info "=== Detecting OS and Architecture ==="
+    print_info "=== Detecting OS and Architecture ==="
     
     # Detect OS
     case "$(uname -s)" in
@@ -88,7 +88,7 @@ detect_os_arch() {
 }
 
 check_environment() {
-    info "=== Checking Environment ==="
+    print_info "=== Checking Environment ==="
     
     if ! is_github_actions; then
         print_info "Running in local environment"
@@ -137,10 +137,10 @@ check_environment() {
 }
 
 test_rust_ecosystem() {
-    info "=== Testing Rust Ecosystem ==="
+    print_info "=== Testing Rust Ecosystem ==="
     
     # Test CLI binary installation and functionality
-    info "Testing Rust CLI binary from crates.io..."
+    print_info "Testing Rust CLI binary from crates.io..."
     
     # Install CLI from crates.io
     if cargo install "$PROJECT_NAME" --force > /dev/null 2>&1; then
@@ -166,7 +166,7 @@ test_rust_ecosystem() {
     fi
     
     # Test core crate functionality by creating a test project
-    info "Testing Rust core crate from crates.io..."
+    print_info "Testing Rust core crate from crates.io..."
     
     # Create temporary test directory
     TEST_DIR="/tmp/${PROJECT_NAME}-crate-test-$$"
@@ -212,10 +212,10 @@ EOF
 }
 
 test_npm_ecosystem() {
-    info "=== Testing npm Ecosystem ==="
+    print_info "=== Testing npm Ecosystem ==="
     
     # Install npm package globally
-    info "Installing npm package from registry..."
+    print_info "Installing npm package from registry..."
     
     if npm install -g "${PROJECT_NAME}-js" > /dev/null 2>&1; then
         print_success "✓ npm package installed from registry"
@@ -247,10 +247,10 @@ test_npm_ecosystem() {
 }
 
 test_python_ecosystem() {
-    info "=== Testing Python Ecosystem ==="
+    print_info "=== Testing Python Ecosystem ==="
     
     # Install Python package from PyPI
-    info "Installing Python package from PyPI..."
+    print_info "Installing Python package from PyPI..."
     
     # Use uv for installation
     if uv pip install "${PROJECT_NAME}-python" > /dev/null 2>&1; then
@@ -287,7 +287,7 @@ test_python_ecosystem() {
 }
 
 cleanup_test_environment() {
-    info "=== Cleaning up test environment ==="
+    print_info "=== Cleaning up test environment ==="
     
     # Clean up any temporary installations
     # Uninstall test packages to avoid conflicts
@@ -316,7 +316,7 @@ cleanup_test_environment() {
 }
 
 generate_test_report() {
-    info "=== Test Report Generation ==="
+    print_info "=== Test Report Generation ==="
     
     # Create a simple test report
     REPORT_FILE="/tmp/${PROJECT_NAME}-test-report-$(date +%Y%m%d-%H%M%S).txt"
@@ -351,8 +351,8 @@ EOF
 }
 
 main() {
-    info "=== Testing Published ${PROJECT_NAME} Packages ==="
-    info "Enhanced multi-platform testing with OS/architecture detection"
+    print_info "=== Testing Published ${PROJECT_NAME} Packages ==="
+    print_info "Enhanced multi-platform testing with OS/architecture detection"
     echo ""
     
     # Initialize test results
@@ -388,7 +388,7 @@ main() {
     generate_test_report
     
     # Summary
-    success "=== Published Package Testing Summary ==="
+    print_success "=== Published Package Testing Summary ==="
     print_success "Platform: ${PLATFORM} (${OS}-${ARCH})"
     
     if [[ "$RUST_CLI_RESULT" == "PASS" ]]; then
@@ -420,11 +420,11 @@ main() {
     # Final result
     if [[ "$RUST_CLI_RESULT" == "PASS" && "$RUST_CORE_RESULT" == "PASS" && "$NPM_RESULT" == "PASS" && "$PYTHON_RESULT" == "PASS" ]]; then
         print_success "🎉 All published package tests passed on ${PLATFORM}!"
-        info "All packages are working correctly in their respective ecosystems."
+        print_info "All packages are working correctly in their respective ecosystems."
         exit 0
     else
         print_error "❌ Some published package tests failed on ${PLATFORM}"
-        info "Check the test report and individual test outputs for details."
+        print_info "Check the test report and individual test outputs for details."
         exit 1
     fi
 }
