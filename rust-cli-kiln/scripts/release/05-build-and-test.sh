@@ -125,7 +125,7 @@ main() {
         # Build Python package with maturin
         # Use compatibility off for local development, explicit manylinux for GitHub Actions
         if [ -n "${GITHUB_ACTIONS:-}" ]; then
-            MATURIN_ARGS="--release --compatibility auto"
+            MATURIN_ARGS="--release --compatibility manylinux2014"
         else
             MATURIN_ARGS="--release --compatibility off"
         fi
@@ -157,7 +157,7 @@ main() {
                 if [ $MATURIN_EXIT_CODE -ne 0 ]; then
                     MATURIN_OUTPUT="(Direct execution failed, see output above)"
                 else
-                    MATURIN_OUTPUT="Build successful with compatibility auto"
+                    MATURIN_OUTPUT="Build successful with compatibility manylinux2014"
                     # Show built wheels
                     if [ -d "$PROJECT_ROOT/target/wheels" ]; then
                         echo "DEBUG: Built wheels:"
