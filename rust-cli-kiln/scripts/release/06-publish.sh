@@ -57,13 +57,15 @@ check_prerequisites() {
     fi
     
     # Check that build artifacts exist (from 05-build-and-test.sh)
-    if [[ ! -f "target/release/${PROJECT_NAME}" ]]; then
-        echo "❌ ERROR: Release binary not found - run 05-build-and-test.sh first"
+    # 05-build-and-test.sh runs release build for core library
+    if [[ ! -d "target/release" ]]; then
+        echo "❌ ERROR: Release build directory not found - run 05-build-and-test.sh first"
         exit 1
     fi
     
-    if [[ ! -d "${PROJECT_NAME}-python/dist" ]] || [[ -z "$(ls -A ${PROJECT_NAME}-python/dist 2>/dev/null)" ]]; then
-        echo "❌ ERROR: Python wheel not found - run 05-build-and-test.sh first"
+    # Check for Python wheels (built by maturin to target/wheels/)
+    if [[ ! -d "target/wheels" ]] || [[ -z "$(ls -A target/wheels/*python*.whl 2>/dev/null)" ]]; then
+        echo "❌ ERROR: Python wheel not found in target/wheels/ - run 05-build-and-test.sh first"
         exit 1
     fi
     
@@ -157,29 +159,25 @@ publish_npm_package() {
 publish_python_package() {
     echo "ℹ️  === Publishing Python Package ==="
     
-    cd "${PROJECT_NAME}-python"
-    
+    # Python wheels are in PROJECT_ROOT/target/wheels/ (built by maturin)
     if is_github_actions; then
         # Use twine to publish to PyPI
         if command -v twine &> /dev/null; then
-            if twine upload dist/*.whl; then
+            if twine upload target/wheels/*python*.whl; then
                 echo "✅ ✓ Python package published to PyPI"
             else
                 echo "❌ ERROR: Failed to publish Python package to PyPI"
-                cd "$PROJECT_ROOT"
                 exit 1
             fi
         else
             echo "❌ ERROR: twine not found - required for PyPI publishing"
-            cd "$PROJECT_ROOT"
             exit 1
         fi
     else
-        if twine check dist/*.whl; then
+        if twine check target/wheels/*python*.whl; then
             echo "✅ ✓ Python package validation passed"
         else
             echo "❌ ERROR: Python package validation failed"
-            cd "$PROJECT_ROOT"
             exit 1
         fi
     fi
