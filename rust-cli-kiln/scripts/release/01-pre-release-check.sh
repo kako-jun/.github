@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 
 # Comprehensive pre-release check - AI Optimized
 # Validates environment, tools, authentication, and git state before release
@@ -119,7 +119,7 @@ check_github_status() {
     fi
     
     # Check open issues
-    OPEN_ISSUES=$(gh issue list --state open --json number 2>/dev/null | jq length 2>/dev/null || echo "unknown")
+    OPEN_ISSUES=$(timeout 10 gh issue list --state open --json number 2>/dev/null | jq length 2>/dev/null || echo "unknown")
     if [ "$OPEN_ISSUES" != "unknown" ]; then
         if [ "$OPEN_ISSUES" -gt 0 ]; then
             print_warning "Found $OPEN_ISSUES open issues"
@@ -130,7 +130,7 @@ check_github_status() {
     fi
     
     # Check open PRs
-    OPEN_PRS=$(gh pr list --state open --json number 2>/dev/null | jq length 2>/dev/null || echo "unknown")
+    OPEN_PRS=$(timeout 10 gh pr list --state open --json number 2>/dev/null | jq length 2>/dev/null || echo "unknown")
     if [ "$OPEN_PRS" != "unknown" ]; then
         if [ "$OPEN_PRS" -gt 0 ]; then
             print_warning "Found $OPEN_PRS open PRs"
@@ -141,7 +141,7 @@ check_github_status() {
     fi
     
     # Check recent CI runs
-    RECENT_RUNS=$(gh run list --limit 3 --json status,conclusion | jq -r '.[] | select(.status == "completed") | .conclusion' | head -1)
+    RECENT_RUNS=$(timeout 10 gh run list --limit 3 --json status,conclusion 2>/dev/null | jq -r '.[] | select(.status == "completed") | .conclusion' 2>/dev/null | head -1)
     if [ "$RECENT_RUNS" = "success" ]; then
         print_success "Recent CI run successful"
     else
