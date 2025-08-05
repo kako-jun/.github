@@ -120,6 +120,7 @@ main() {
         
         # Install dependencies with uv
         uv sync --frozen
+        echo "DEBUG: uv sync completed with exit code: $?"
         
         # Build Python package with maturin
         # Use compatibility off for local development, explicit manylinux for GitHub Actions
@@ -130,7 +131,11 @@ main() {
         fi
         
         # Clean previous wheels to avoid using old versions
-        rm -rf $PROJECT_ROOT/target/wheels/*.whl 2>/dev/null || true
+        echo "DEBUG: Cleaning wheels from: $PROJECT_ROOT/target/wheels/"
+        if [ -d "$PROJECT_ROOT/target/wheels" ]; then
+            find "$PROJECT_ROOT/target/wheels" -name "*.whl" -type f -delete || true
+        fi
+        echo "DEBUG: Wheel cleaning completed"
         
         # Capture maturin build output for debugging
         MATURIN_OUTPUT=$(uv run maturin build $MATURIN_ARGS 2>&1)
