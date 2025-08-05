@@ -134,7 +134,7 @@ main() {
             
             # Install and test the built package
             # maturin builds wheels to PROJECT_ROOT/target/wheels/ directory
-            WHEEL_PATH=$(ls $PROJECT_ROOT/target/wheels/${PROJECT_NAME}_python-*.whl 2>/dev/null | sort -V | tail -1)
+            WHEEL_PATH=$(ls $PROJECT_ROOT/target/wheels/${PROJECT_NAME}*python*.whl 2>/dev/null | sort -V | tail -1)
             if [ -n "$WHEEL_PATH" ] && uv pip install "$WHEEL_PATH" --force-reinstall > /dev/null 2>&1; then
                 # Run integration tests  
                 # Use the same venv as the installation
