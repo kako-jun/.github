@@ -145,12 +145,20 @@ main() {
             # Check if maturin is available
             if command -v maturin &> /dev/null; then
                 echo "DEBUG: maturin found at: $(which maturin)"
-                # Use a temporary file to capture output to avoid subshell issues
-                TEMP_OUTPUT_FILE=$(mktemp)
-                maturin build $MATURIN_ARGS > "$TEMP_OUTPUT_FILE" 2>&1
+                echo "DEBUG: Current directory: $(pwd)"
+                echo "DEBUG: Python interpreter: $(which python)"
+                echo "DEBUG: Python version: $(python --version)"
+                # Try running maturin directly without capturing output first
+                echo "DEBUG: Running maturin build command directly..."
+                maturin build $MATURIN_ARGS
                 MATURIN_EXIT_CODE=$?
-                MATURIN_OUTPUT=$(cat "$TEMP_OUTPUT_FILE")
-                rm -f "$TEMP_OUTPUT_FILE"
+                echo "DEBUG: Direct maturin exit code: $MATURIN_EXIT_CODE"
+                # If it failed, capture the output for error reporting
+                if [ $MATURIN_EXIT_CODE -ne 0 ]; then
+                    MATURIN_OUTPUT="(Direct execution failed, see output above)"
+                else
+                    MATURIN_OUTPUT="Build successful"
+                fi
             else
                 echo "DEBUG: maturin not found in PATH, trying with python -m"
                 TEMP_OUTPUT_FILE=$(mktemp)
