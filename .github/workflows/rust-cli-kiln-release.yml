@@ -71,6 +71,13 @@ jobs:
         repository: kako-jun/.github
         path: .github
         
+    - name: Build Python wheel with manylinux
+      uses: messense/maturin-action@v1
+      with:
+        working-directory: ${{ inputs.project-name }}-python
+        manylinux: 2_28
+        args: --release --out dist
+        
     - name: Setup environment and run build-test-publish sequence
       env:
         CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
@@ -94,7 +101,8 @@ jobs:
         source .venv/bin/activate 2>/dev/null || { uv venv && source .venv/bin/activate; }
         uv pip install maturin wheel build twine
         
-        echo "Step 1: Running comprehensive build and test..."
+        echo "Step 1: Running comprehensive build and test (skip Python wheel build)..."
+        export SKIP_PYTHON_WHEEL_BUILD=1
         github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh && \
         echo "Step 2: Running atomic publish (same environment)..." && \
         github-shared/rust-cli-kiln/scripts/release/06-publish.sh

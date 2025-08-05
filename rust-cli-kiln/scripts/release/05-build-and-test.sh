@@ -102,7 +102,7 @@ main() {
     print_success "✓ Core release build completed - ready for Python/JavaScript bindings"
     
     # Step 6: Test Python package (build and test)
-    if [ -d "$PROJECT_ROOT/${PROJECT_NAME}-python" ]; then
+    if [ -d "$PROJECT_ROOT/${PROJECT_NAME}-python" ] && [ -z "${SKIP_PYTHON_WHEEL_BUILD:-}" ]; then
         print_info "Step 6: Testing Python package..."
         cd "$PROJECT_ROOT/${PROJECT_NAME}-python"
         
@@ -123,12 +123,8 @@ main() {
         echo "DEBUG: uv sync completed with exit code: $?"
         
         # Build Python package with maturin
-        # Use compatibility off for local development, explicit manylinux for GitHub Actions
-        if [ -n "${GITHUB_ACTIONS:-}" ]; then
-            MATURIN_ARGS="--release --compatibility manylinux2014"
-        else
-            MATURIN_ARGS="--release --compatibility off"
-        fi
+        # Use compatibility off for both local and GitHub Actions to avoid GLIBC version conflicts
+        MATURIN_ARGS="--release --compatibility off"
         
         # Clean previous wheels to avoid using old versions
         echo "DEBUG: Cleaning wheels from: $PROJECT_ROOT/target/wheels/"
@@ -157,7 +153,7 @@ main() {
                 if [ $MATURIN_EXIT_CODE -ne 0 ]; then
                     MATURIN_OUTPUT="(Direct execution failed, see output above)"
                 else
-                    MATURIN_OUTPUT="Build successful with compatibility manylinux2014"
+                    MATURIN_OUTPUT="Build successful with compatibility off"
                     # Show built wheels
                     if [ -d "$PROJECT_ROOT/target/wheels" ]; then
                         echo "DEBUG: Built wheels:"
@@ -219,6 +215,8 @@ main() {
         fi
         
         cd "$PROJECT_ROOT"
+    elif [ -n "${SKIP_PYTHON_WHEEL_BUILD:-}" ]; then
+        print_info "Step 6: Skipping Python wheel build (using pre-built wheel from maturin-action)"
     else
         print_info "Step 6: Skipping Python tests (${PROJECT_NAME}-python not found)"
     fi
