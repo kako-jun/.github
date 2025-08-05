@@ -34,62 +34,62 @@ if ! is_github_actions; then
 fi
 
 check_prerequisites() {
-    info "Checking publishing prerequisites..."
+    echo "📋 Checking publishing prerequisites..."
     
     # Check required environment variables for GitHub Actions
     if is_github_actions; then
         if [[ -z "${CARGO_REGISTRY_TOKEN:-}" ]]; then
-            error "CARGO_REGISTRY_TOKEN not set - required for crates.io publishing"
+            echo "❌ ERROR: CARGO_REGISTRY_TOKEN not set - required for crates.io publishing"
             exit 1
         fi
         
         if [[ -z "${NPM_TOKEN:-}" ]] && [[ -z "${NODE_AUTH_TOKEN:-}" ]]; then
-            error "NPM_TOKEN or NODE_AUTH_TOKEN not set - required for npm publishing"
+            echo "❌ ERROR: NPM_TOKEN or NODE_AUTH_TOKEN not set - required for npm publishing"
             exit 1
         fi
         
         if [[ -z "${PYPI_TOKEN:-}" ]] && [[ -z "${TWINE_PASSWORD:-}" ]]; then
-            error "PYPI_TOKEN or TWINE_PASSWORD not set - required for PyPI publishing"
+            echo "❌ ERROR: PYPI_TOKEN or TWINE_PASSWORD not set - required for PyPI publishing"
             exit 1
         fi
         
-        success "✓ All required tokens are available"
+        echo "✅ All required tokens are available"
     fi
     
     # Check that build artifacts exist (from 05-build-and-test.sh)
     if [[ ! -f "target/release/${PROJECT_NAME}" ]]; then
-        error "Release binary not found - run 05-build-and-test.sh first"
+        echo "❌ ERROR: Release binary not found - run 05-build-and-test.sh first"
         exit 1
     fi
     
     if [[ ! -d "${PROJECT_NAME}-python/dist" ]] || [[ -z "$(ls -A ${PROJECT_NAME}-python/dist 2>/dev/null)" ]]; then
-        error "Python wheel not found - run 05-build-and-test.sh first"
+        echo "❌ ERROR: Python wheel not found - run 05-build-and-test.sh first"
         exit 1
     fi
     
-    success "✓ Required build artifacts are present"
+    echo "✅ Required build artifacts are present"
 }
 
 publish_rust_packages() {
-    info "=== Publishing Rust Packages ==="
+    echo "📦 === Publishing Rust Packages ==="
     
     # Publish core crate first (CLI depends on it)
-    info "Publishing ${PROJECT_NAME}-core to crates.io..."
+    echo "📦 Publishing ${PROJECT_NAME}-core to crates.io..."
     cd "${PROJECT_NAME}-core"
     
     if is_github_actions; then
         if cargo publish; then
-            success "✓ ${PROJECT_NAME}-core published to crates.io"
+            echo "✅ ${PROJECT_NAME}-core published to crates.io"
         else
-            error "Failed to publish ${PROJECT_NAME}-core to crates.io"
+            echo "❌ ERROR: Failed to publish ${PROJECT_NAME}-core to crates.io"
             cd "$PROJECT_ROOT"
             exit 1
         fi
     else
         if cargo publish --dry-run; then
-            success "✓ ${PROJECT_NAME}-core dry-run passed"
+            echo "✅ ✓ ${PROJECT_NAME}-core dry-run passed"
         else
-            error "${PROJECT_NAME}-core dry-run failed"
+            echo "❌ ERROR: ${PROJECT_NAME}-core dry-run failed"
             cd "$PROJECT_ROOT"
             exit 1
         fi
@@ -99,27 +99,27 @@ publish_rust_packages() {
     
     # Wait for crate to be available
     if is_github_actions; then
-        info "Waiting 30 seconds for crate to propagate..."
+        echo "ℹ️  Waiting 30 seconds for crate to propagate..."
         sleep 30
     fi
     
     # Publish CLI crate
-    info "Publishing ${PROJECT_NAME} CLI to crates.io..."
+    echo "ℹ️  Publishing ${PROJECT_NAME} CLI to crates.io..."
     cd "${PROJECT_NAME}-cli"
     
     if is_github_actions; then
         if cargo publish; then
-            success "✓ ${PROJECT_NAME} CLI published to crates.io"
+            echo "✅ ✓ ${PROJECT_NAME} CLI published to crates.io"
         else
-            error "Failed to publish ${PROJECT_NAME} CLI to crates.io"
+            echo "❌ ERROR: Failed to publish ${PROJECT_NAME} CLI to crates.io"
             cd "$PROJECT_ROOT"
             exit 1
         fi
     else
         if cargo publish --dry-run; then
-            success "✓ ${PROJECT_NAME} CLI dry-run passed"
+            echo "✅ ✓ ${PROJECT_NAME} CLI dry-run passed"
         else
-            error "${PROJECT_NAME} CLI dry-run failed"
+            echo "❌ ERROR: ${PROJECT_NAME} CLI dry-run failed"
             cd "$PROJECT_ROOT"
             exit 1
         fi
@@ -129,23 +129,23 @@ publish_rust_packages() {
 }
 
 publish_npm_package() {
-    info "=== Publishing npm Package ==="
+    echo "ℹ️  === Publishing npm Package ==="
     
     cd "${PROJECT_NAME}-js"
     
     if is_github_actions; then
         if npm publish; then
-            success "✓ npm package published"
+            echo "✅ ✓ npm package published"
         else
-            error "Failed to publish npm package"
+            echo "❌ ERROR: Failed to publish npm package"
             cd "$PROJECT_ROOT"
             exit 1
         fi
     else
         if npm publish --dry-run; then
-            success "✓ npm package dry-run passed"
+            echo "✅ ✓ npm package dry-run passed"
         else
-            error "npm package dry-run failed"
+            echo "❌ ERROR: npm package dry-run failed"
             cd "$PROJECT_ROOT"
             exit 1
         fi
@@ -155,7 +155,7 @@ publish_npm_package() {
 }
 
 publish_python_package() {
-    info "=== Publishing Python Package ==="
+    echo "ℹ️  === Publishing Python Package ==="
     
     cd "${PROJECT_NAME}-python"
     
@@ -163,22 +163,22 @@ publish_python_package() {
         # Use twine to publish to PyPI
         if command -v twine &> /dev/null; then
             if twine upload dist/*.whl; then
-                success "✓ Python package published to PyPI"
+                echo "✅ ✓ Python package published to PyPI"
             else
-                error "Failed to publish Python package to PyPI"
+                echo "❌ ERROR: Failed to publish Python package to PyPI"
                 cd "$PROJECT_ROOT"
                 exit 1
             fi
         else
-            error "twine not found - required for PyPI publishing"
+            echo "❌ ERROR: twine not found - required for PyPI publishing"
             cd "$PROJECT_ROOT"
             exit 1
         fi
     else
         if twine check dist/*.whl; then
-            success "✓ Python package validation passed"
+            echo "✅ ✓ Python package validation passed"
         else
-            error "Python package validation failed"
+            echo "❌ ERROR: Python package validation failed"
             cd "$PROJECT_ROOT"
             exit 1
         fi
@@ -192,39 +192,39 @@ main() {
     check_prerequisites
     
     if is_github_actions; then
-        info "🚀 PRODUCTION PUBLISHING MODE"
-        info "Publishing to production registries..."
+        echo "ℹ️  🚀 PRODUCTION PUBLISHING MODE"
+        echo "ℹ️  Publishing to production registries..."
     else
-        info "🧪 DRY-RUN MODE" 
-        info "Validating packages without publishing..."
+        echo "ℹ️  🧪 DRY-RUN MODE" 
+        echo "ℹ️  Validating packages without publishing..."
     fi
     
     echo ""
     
     # Atomic publishing - all or nothing
-    info "Phase 1: Publishing Rust packages..."
+    echo "ℹ️  Phase 1: Publishing Rust packages..."
     publish_rust_packages
     
-    info "Phase 2: Publishing npm package..."
+    echo "ℹ️  Phase 2: Publishing npm package..."
     publish_npm_package
     
-    info "Phase 3: Publishing Python package..."
+    echo "ℹ️  Phase 3: Publishing Python package..."
     publish_python_package
     
     echo ""
     if is_github_actions; then
-        success "🎉 ATOMIC PUBLISH SUCCESSFUL!"
-        info "All packages published successfully:"
-        info "  ✓ ${PROJECT_NAME}-core → crates.io"
-        info "  ✓ ${PROJECT_NAME} CLI → crates.io" 
-        info "  ✓ ${PROJECT_NAME}-js → npmjs.com"
-        info "  ✓ ${PROJECT_NAME}-python → PyPI"
-        info ""
-        info "Next step: 07-create-release-tag.sh to create GitHub release"
+        echo "✅ 🎉 ATOMIC PUBLISH SUCCESSFUL!"
+        echo "ℹ️  All packages published successfully:"
+        echo "ℹ️    ✓ ${PROJECT_NAME}-core → crates.io"
+        echo "ℹ️    ✓ ${PROJECT_NAME} CLI → crates.io" 
+        echo "ℹ️    ✓ ${PROJECT_NAME}-js → npmjs.com"
+        echo "ℹ️    ✓ ${PROJECT_NAME}-python → PyPI"
+        echo "ℹ️  "
+        echo "ℹ️  Next step: 07-create-release-tag.sh to create GitHub release"
     else
-        success "🎉 DRY-RUN VALIDATION SUCCESSFUL!"
-        info "All packages are ready for publishing"
-        info "Run this script in GitHub Actions to publish to production"
+        echo "✅ 🎉 DRY-RUN VALIDATION SUCCESSFUL!"
+        echo "ℹ️  All packages are ready for publishing"
+        echo "ℹ️  Run this script in GitHub Actions to publish to production"
     fi
 }
 
