@@ -145,17 +145,27 @@ main() {
             # Check if maturin is available
             if command -v maturin &> /dev/null; then
                 echo "DEBUG: maturin found at: $(which maturin)"
-                MATURIN_OUTPUT=$(maturin build $MATURIN_ARGS 2>&1)
+                # Use a temporary file to capture output to avoid subshell issues
+                TEMP_OUTPUT_FILE=$(mktemp)
+                maturin build $MATURIN_ARGS > "$TEMP_OUTPUT_FILE" 2>&1
                 MATURIN_EXIT_CODE=$?
+                MATURIN_OUTPUT=$(cat "$TEMP_OUTPUT_FILE")
+                rm -f "$TEMP_OUTPUT_FILE"
             else
                 echo "DEBUG: maturin not found in PATH, trying with python -m"
-                MATURIN_OUTPUT=$(python -m maturin build $MATURIN_ARGS 2>&1)
+                TEMP_OUTPUT_FILE=$(mktemp)
+                python -m maturin build $MATURIN_ARGS > "$TEMP_OUTPUT_FILE" 2>&1
                 MATURIN_EXIT_CODE=$?
+                MATURIN_OUTPUT=$(cat "$TEMP_OUTPUT_FILE")
+                rm -f "$TEMP_OUTPUT_FILE"
             fi
         else
             echo "DEBUG: Using uv run to execute maturin"
-            MATURIN_OUTPUT=$(uv run maturin build $MATURIN_ARGS 2>&1)
+            TEMP_OUTPUT_FILE=$(mktemp)
+            uv run maturin build $MATURIN_ARGS > "$TEMP_OUTPUT_FILE" 2>&1
             MATURIN_EXIT_CODE=$?
+            MATURIN_OUTPUT=$(cat "$TEMP_OUTPUT_FILE")
+            rm -f "$TEMP_OUTPUT_FILE"
         fi
         echo "DEBUG: Maturin build exit code: $MATURIN_EXIT_CODE"
         if [ $MATURIN_EXIT_CODE -eq 0 ]; then
