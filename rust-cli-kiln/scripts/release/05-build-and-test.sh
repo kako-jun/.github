@@ -133,16 +133,19 @@ main() {
             print_success "  ✓ Python package build passed (with uv)"
             
             # Install and test the built package
-            if uv pip install dist/*.whl --force-reinstall > /dev/null 2>&1; then
-                # Run integration tests
-                if uv run python test_integration.py > /dev/null 2>&1; then
+            # maturin builds wheels to PROJECT_ROOT/target/wheels/ directory
+            WHEEL_PATH=$(ls $PROJECT_ROOT/target/wheels/diffx_python-*.whl 2>/dev/null | sort -V | tail -1)
+            if [ -n "$WHEEL_PATH" ] && uv pip install "$WHEEL_PATH" --force-reinstall > /dev/null 2>&1; then
+                # Run integration tests  
+                # Use the same venv as the installation
+                if source ../.venv/bin/activate && python test_integration.py > /dev/null 2>&1; then
                     print_success "  ✓ Python integration tests passed"
                 else
                     print_warning "  Python integration tests failed"
                 fi
                 
                 # Run pytest if available
-                if uv run pytest tests/ -v > /dev/null 2>&1; then
+                if source ../.venv/bin/activate && python -m pytest tests/ -v > /dev/null 2>&1; then
                     print_success "  ✓ Python pytest passed"
                 else
                     print_info "  pytest skipped or failed"
