@@ -70,12 +70,6 @@ jobs:
         repository: kako-jun/.github
         path: .github
         
-    - name: Create github-shared symlink
-      run: |
-        # Create the symlink using the script in the project repository
-        chmod +x scripts/utils/create-github-shared-symlink.sh
-        ./scripts/utils/create-github-shared-symlink.sh
-        
     - name: Setup environment and run build-test-publish sequence
       env:
         CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
@@ -85,6 +79,9 @@ jobs:
       run: |
         # Setup environment variables for workflow type
         export WORKFLOW_CALL_PROJECT="${{ inputs.project-name }}"
+        
+        # Create symlink and verify it works
+        ./scripts/utils/create-github-shared-symlink.sh
         
         # Source common.sh from the symlinked .github
         source github-shared/rust-cli-kiln/scripts/utils/common.sh
