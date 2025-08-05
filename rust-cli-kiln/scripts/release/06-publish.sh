@@ -64,7 +64,7 @@ check_prerequisites() {
     fi
     
     # Check for Python wheels (built by maturin to target/wheels/)
-    if [[ ! -d "target/wheels" ]] || [[ -z "$(ls -A target/wheels/*python*.whl 2>/dev/null)" ]]; then
+    if [[ ! -d "target/wheels" ]] || [[ -z "$(ls -A target/wheels/${PROJECT_NAME}_python*.whl 2>/dev/null)" ]]; then
         echo "❌ ERROR: Python wheel not found in target/wheels/ - run 05-build-and-test.sh first"
         exit 1
     fi
@@ -163,7 +163,7 @@ publish_python_package() {
     if is_github_actions; then
         # Use twine to publish to PyPI
         if command -v twine &> /dev/null; then
-            if twine upload target/wheels/*python*.whl; then
+            if twine upload target/wheels/${PROJECT_NAME}_python*.whl; then
                 echo "✅ ✓ Python package published to PyPI"
             else
                 echo "❌ ERROR: Failed to publish Python package to PyPI"
@@ -174,7 +174,7 @@ publish_python_package() {
             exit 1
         fi
     else
-        if twine check target/wheels/*python*.whl; then
+        if twine check target/wheels/${PROJECT_NAME}_python*.whl; then
             echo "✅ ✓ Python package validation passed"
         else
             echo "❌ ERROR: Python package validation failed"
