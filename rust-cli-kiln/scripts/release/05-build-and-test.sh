@@ -138,8 +138,19 @@ main() {
         echo "DEBUG: Wheel cleaning completed"
         
         # Capture maturin build output for debugging
-        MATURIN_OUTPUT=$(uv run maturin build $MATURIN_ARGS 2>&1)
-        if [ $? -eq 0 ]; then
+        echo "DEBUG: Running maturin build with args: $MATURIN_ARGS"
+        # If we're in a virtual environment, use maturin directly, otherwise use uv run
+        if [ -n "${VIRTUAL_ENV:-}" ]; then
+            echo "DEBUG: Using maturin directly in virtual environment"
+            MATURIN_OUTPUT=$(maturin build $MATURIN_ARGS 2>&1)
+            MATURIN_EXIT_CODE=$?
+        else
+            echo "DEBUG: Using uv run to execute maturin"
+            MATURIN_OUTPUT=$(uv run maturin build $MATURIN_ARGS 2>&1)
+            MATURIN_EXIT_CODE=$?
+        fi
+        echo "DEBUG: Maturin build exit code: $MATURIN_EXIT_CODE"
+        if [ $MATURIN_EXIT_CODE -eq 0 ]; then
             print_success "  ✓ Python package build passed (with uv)"
             
             # Install and test the built package
