@@ -72,9 +72,9 @@ jobs:
         
     - name: Create github-shared symlink
       run: |
-        # Create the symlink using the provided script
-        chmod +x .github/scripts/utils/create-github-shared-symlink.sh
-        ./.github/scripts/utils/create-github-shared-symlink.sh
+        # Create the symlink using the script in the project repository
+        chmod +x scripts/utils/create-github-shared-symlink.sh
+        ./scripts/utils/create-github-shared-symlink.sh
         
     - name: Setup environment and run build-test-publish sequence
       env:
