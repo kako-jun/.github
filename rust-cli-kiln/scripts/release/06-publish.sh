@@ -203,11 +203,11 @@ main() {
     echo "ℹ️  Phase 1: Publishing Rust packages..."
     publish_rust_packages
     
-    echo "ℹ️  Phase 2: Publishing npm package..."
-    publish_npm_package
-    
-    echo "ℹ️  Phase 3: Publishing Python package..."
+    echo "ℹ️  Phase 2: Publishing Python package..."
     publish_python_package
+    
+    echo "ℹ️  Phase 3: Publishing npm package..."
+    publish_npm_package
     
     echo ""
     if is_github_actions; then
@@ -215,8 +215,8 @@ main() {
         echo "ℹ️  All packages published successfully:"
         echo "ℹ️    ✓ ${PROJECT_NAME}-core → crates.io"
         echo "ℹ️    ✓ ${PROJECT_NAME} CLI → crates.io" 
-        echo "ℹ️    ✓ ${PROJECT_NAME}-js → npmjs.com"
         echo "ℹ️    ✓ ${PROJECT_NAME}-python → PyPI"
+        echo "ℹ️    ✓ ${PROJECT_NAME}-js → npmjs.com"
         echo "ℹ️  "
         echo "ℹ️  Next step: 07-create-release-tag.sh to create GitHub release"
     else

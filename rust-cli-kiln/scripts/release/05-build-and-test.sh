@@ -129,7 +129,12 @@ main() {
             MATURIN_ARGS="--release --compatibility off"
         fi
         
-        if uv run maturin build $MATURIN_ARGS > /dev/null 2>&1; then
+        # Clean previous wheels to avoid using old versions
+        rm -rf $PROJECT_ROOT/target/wheels/*.whl 2>/dev/null || true
+        
+        # Capture maturin build output for debugging
+        MATURIN_OUTPUT=$(uv run maturin build $MATURIN_ARGS 2>&1)
+        if [ $? -eq 0 ]; then
             print_success "  ✓ Python package build passed (with uv)"
             
             # Install and test the built package
@@ -154,7 +159,11 @@ main() {
                 print_warning "  Python package installation failed"
             fi
         else
-            print_warning "  maturin build failed - check pyproject.toml"
+            print_error "  maturin build failed - check pyproject.toml"
+            echo "Maturin build error output:"
+            echo "$MATURIN_OUTPUT"
+            cd "$PROJECT_ROOT"
+            exit 1
         fi
         
         cd "$PROJECT_ROOT"

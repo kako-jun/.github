@@ -54,6 +54,7 @@ jobs:
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           target/
+          !target/wheels/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           ${{ runner.os }}-cargo-
@@ -94,9 +95,8 @@ jobs:
         uv pip install maturin wheel build twine
         
         echo "Step 1: Running comprehensive build and test..."
-        github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh
-        
-        echo "Step 2: Running atomic publish (same environment)..."
+        github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh && \
+        echo "Step 2: Running atomic publish (same environment)..." && \
         github-shared/rust-cli-kiln/scripts/release/06-publish.sh
   
   test-published-packages:
