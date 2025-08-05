@@ -76,7 +76,7 @@ jobs:
       with:
         working-directory: ${{ inputs.project-name }}-python
         manylinux: 2_28
-        args: --release --out dist
+        args: --release --out ../target/wheels
         
     - name: Setup environment and run build-test-publish sequence
       env:
