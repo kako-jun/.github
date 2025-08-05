@@ -142,8 +142,16 @@ main() {
         # If we're in a virtual environment, use maturin directly, otherwise use uv run
         if [ -n "${VIRTUAL_ENV:-}" ]; then
             echo "DEBUG: Using maturin directly in virtual environment"
-            MATURIN_OUTPUT=$(maturin build $MATURIN_ARGS 2>&1)
-            MATURIN_EXIT_CODE=$?
+            # Check if maturin is available
+            if command -v maturin &> /dev/null; then
+                echo "DEBUG: maturin found at: $(which maturin)"
+                MATURIN_OUTPUT=$(maturin build $MATURIN_ARGS 2>&1)
+                MATURIN_EXIT_CODE=$?
+            else
+                echo "DEBUG: maturin not found in PATH, trying with python -m"
+                MATURIN_OUTPUT=$(python -m maturin build $MATURIN_ARGS 2>&1)
+                MATURIN_EXIT_CODE=$?
+            fi
         else
             echo "DEBUG: Using uv run to execute maturin"
             MATURIN_OUTPUT=$(uv run maturin build $MATURIN_ARGS 2>&1)
@@ -175,9 +183,14 @@ main() {
                 print_warning "  Python package installation failed"
             fi
         else
-            print_error "  maturin build failed - check pyproject.toml"
+            print_error "  maturin build failed (exit code: $MATURIN_EXIT_CODE)"
             echo "Maturin build error output:"
             echo "$MATURIN_OUTPUT"
+            # Also show last 50 lines if output is very long
+            if [ $(echo "$MATURIN_OUTPUT" | wc -l) -gt 50 ]; then
+                echo "... (truncated, showing last 50 lines)"
+                echo "$MATURIN_OUTPUT" | tail -50
+            fi
             cd "$PROJECT_ROOT"
             exit 1
         fi
