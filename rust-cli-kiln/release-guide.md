@@ -4,7 +4,7 @@
 
 > 🔄 **汎用リリースガイド**: このガイドは複数のRustプロジェクトで使い回し可能です
 
-## 🎯 リリース手順（9ステップ - ローカル8ステップ + GitHub Actions自動実行）
+## 🎯 リリース手順（10ステップ - ローカル7ステップ + GitHub Actions自動実行3ステップ）
 
 ### ステップ1: 事前チェック（必須）
 ```bash
@@ -48,44 +48,47 @@ source .venv/bin/activate && uv pip install maturin wheel build twine
 - **⚠️ 注意**: maturinビルドで時間がかかる（5-10分）
 - **Claude実行時**: タイムアウトを10分（600000ms）に設定して実行
 
-### ステップ6: 【GitHub Actions自動実行】アトミック公開
+### ステップ6: リリースタグ作成・GitHub Actions トリガー
 ```bash
-# ローカル実行不要 - GitHub Actionsが自動実行
-# スクリプト: 06-publish.sh（サーバーでのみ実行）
-```
-- **自動実行**: ステップ7のタグ作成で自動トリガー
-- **アトミック公開戦略**: 全パッケージ同時公開（crates.io → npmjs.com → PyPI）
-- **部分失敗防止**: 全て成功 or 全て失敗
-- **ローカルでは実行しない**
-
-### ステップ7: リリースタグ作成・GitHub Actions トリガー
-```bash
-./github-shared/rust-cli-kiln/scripts/release/07-create-release-tag.sh
+./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh
 ```
 - **バージョン更新の変更をコミット**（ここで初めてcommit）
 - Gitタグ作成・プッシュ
-- GitHubリリースページ作成
-- **GitHub Actions自動トリガー** → ステップ6を自動実行
+- **GitHub Actions自動トリガー** → 6OSビルド開始
 
-### ステップ8: リリース監視
+### ステップ7: ビルドアクション監視
 ```bash
-./github-shared/rust-cli-kiln/scripts/release/08-monitor-release.sh vX.Y.Z
+./github-shared/rust-cli-kiln/scripts/release/07-monitor-build-actions.sh vX.Y.Z
 ```
-- GitHub Actionsの実行状況監視
-- 全プラットフォームでの公開完了確認
+- GitHub Actionsの6OSビルド実行状況監視
+- 全プラットフォームでのビルド完了確認
 
-### ステップ9: 公開パッケージ検証【必須】
+### ステップ8: 【GitHub Actions自動実行】アトミック公開
 ```bash
-./github-shared/rust-cli-kiln/scripts/release/09-test-published-packages.sh
+# ローカル実行不要 - GitHub Actionsが自動実行
+# スクリプト: 08-publish-all-packages.sh（サーバーでのみ実行）
 ```
-- **強化されたマルチプラットフォーム対応**
-- OS・アーキテクチャ自動検出
-- npm、PyPI、crates.io公開パッケージの動作確認
-- **重要**: パッケージ配布の問題を検出するため必須実行
-- 実環境でのインストール・動作テスト
-- **ローカル実行**: 現在のプラットフォームのみテスト
-- **GitHub Actions**: 全OS・アーキテクチャでテスト実行
-- **失敗してもリリースは有効（品質保証目的）**
+- **自動実行**: ステップ7のビルド完了で自動トリガー
+- **アトミック公開戦略**: 全パッケージ同時公開（crates.io → PyPI → npm）
+- **6OSバイナリ統合**: Artifactsから6OS wheelとnpmパッケージを収集
+- **部分失敗防止**: 全て成功 or 全て失敗
+
+### ステップ9: 【GitHub Actions自動実行】公開パッケージ検証
+```bash
+# ローカル実行不要 - GitHub Actionsが自動実行
+# スクリプト: 09-test-published-packages.sh（サーバーでのみ実行）
+```
+- **自動実行**: ステップ8の公開完了で自動実行
+- **6OSテスト**: 各プラットフォームでの動作確認
+
+### ステップ10: 【GitHub Actions自動実行】GitHubリリースページ作成
+```bash
+# ローカル実行不要 - GitHub Actionsが自動実行
+# スクリプト: 10-create-github-release.sh（サーバーでのみ実行）
+```
+- **自動実行**: ステップ9のテスト完了で自動実行
+- **6OSバイナリ添付**: 各OS用バイナリzipを自動添付
+- **リリースページ完成**: 詳細なリリースノートとバイナリ配布
 
 ## 📋 完全な実行例
 
@@ -106,17 +109,16 @@ source .venv/bin/activate && uv pip install maturin wheel build twine
 source .venv/bin/activate && uv pip install maturin wheel build twine
 ./github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh
 
-# ステップ6: 【自動実行】GitHub Actionsによるアトミック公開
-# ローカル実行不要 - タグ作成で自動トリガー
+# ステップ6: リリースタグ作成（GitHub Actions自動トリガー）
+./github-shared/rust-cli-kiln/scripts/release/06-create-release-tag.sh
 
-# ステップ7: リリースタグ作成（GitHub Actions自動公開トリガー）
-./github-shared/rust-cli-kiln/scripts/release/07-create-release-tag.sh
+# ステップ7: ビルドアクション監視
+./github-shared/rust-cli-kiln/scripts/release/07-monitor-build-actions.sh vX.Y.Z
 
-# ステップ8: 監視
-./github-shared/rust-cli-kiln/scripts/release/08-monitor-release.sh vX.Y.Z
-
-# ステップ9: 公開パッケージ検証【必須】
-./github-shared/rust-cli-kiln/scripts/release/09-test-published-packages.sh
+# ステップ8-10: 【GitHub Actions自動実行】
+# 08-publish-all-packages.sh - アトミック公開
+# 09-test-published-packages.sh - 公開パッケージ検証
+# 10-create-github-release.sh - GitHubリリースページ作成
 ```
 
 ## 🛠️ 日常開発用クイックチェック
@@ -213,21 +215,22 @@ AIが「リリースして」と言われた時：
 
 ### リリース完了後の必須作業
 
-**ステップ7（監視）完了後、以下を必ず実行：**
+**ステップ10（GitHubリリースページ作成）完了後、以下を必ず実行：**
 
 #### 1. リリースノート詳細化の自動判断
 ```bash
-# 現在のリリースの本文をチェック
+# 現在のリリースの本文をチェック（ステップ10完了後）
 gh release view v<version>
 # または MCPを使用
 # GitHub MCPを使ってリリース情報を取得
 ```
 
 **実行条件**（すべて満たす場合）：
-- ✅ GitHub Actions（Act1/Act2）が完全成功した
+- ✅ GitHub Actions（ステップ8-10）が完全成功した
 - ✅ 新しいリリースページが作成された
 - ✅ リリース本文が簡素（200文字未満、または「**Full Changelog**」のみ）
 - ✅ パッケージレジストリへの公開が成功した
+- ✅ 6OSバイナリがリリースページに添付された
 
 #### 2. 実質的な前バージョンの特定
 ```bash
@@ -242,7 +245,45 @@ gh release list --limit 10
 - 簡素な本文のリリース（「ゴミリリース」）は飛ばす
 - 実質的な前バージョンから現在までの変更を収集
 
-#### 3. リリースノートとCHANGELOG同時更新
+#### 3. Claude Codeによるリリースノート自動作成
+
+**Claude Codeへの指示（日本語で明確に）**：
+
+```
+リリースv<version>の詳細なリリースノートを作成してください。以下の手順で：
+
+1. 前の実質的なバージョンを特定：
+   - `gh release list --limit 10` または GitHub MCPでリリース一覧を確認
+   - 簡素な本文（「**Full Changelog**」のみ等）のリリースは飛ばす
+   - 充実した本文がある最新リリースを「前の実質バージョン」とする
+
+2. 変更内容を収集・分析：
+   - `git log v<前の実質バージョン>..v<現在バージョン> --oneline` で差分確認
+   - コミットメッセージから機能追加・改善・修正を分類
+   - 破壊的変更や重要な技術的変更を特定
+
+3. リリースノート作成・更新：
+   - `gh release edit v<version> --notes` または GitHub MCPでリリースノートを更新
+   - 下記の必須要素をすべて含める
+   - ユーザー目線で分かりやすく記述
+
+必須要素：
+- 主要機能・改善点の要約（一般ユーザー向け）
+- 技術的改善点（開発者・上級ユーザー向け）
+- 破壊的変更・移行ガイド（該当時）
+- パッケージ提供状況（Rust/npm/Python全て）
+- インストール・使用方法の変更（該当時）
+- 次のマイルストーンへの布石
+
+4. CHANGELOG.md同時更新：
+   - 新機能・改善・バグ修正を適切に分類
+   - 破壊的変更があれば冒頭で明記
+   - リンクやマイグレーション情報も追加
+
+注意：失敗したリリースで番号が飛んでいる場合は、最後に成功したバージョンからの累積変更を記載する。
+```
+
+**手動実行が必要な場合**（Claude Code環境外）：
 ```bash
 # 実質的な前バージョンから現在までの変更を収集
 git log v<前の実質バージョン>..v<現在バージョン> --oneline
@@ -255,19 +296,6 @@ EOF
 # または MCPを使用
 # GitHub MCPを使ってリリースノートを更新
 ```
-
-**リリースノート必須要素**：
-- 主要機能・改善点の要約（ユーザー目線）
-- 技術的改善点（開発者・上級ユーザー向け）
-- 破壊的変更・移行ガイド（該当する場合）
-- パッケージ提供状況（Rust/npm/Python）
-- インストール・使用方法の変更（該当する場合）
-- 次のマイルストーンへの布石
-
-**CHANGELOG.md更新**：
-- 新機能・改善・バグ修正を整理
-- 破壊的変更があれば明記
-- リンクやマイグレーション情報を追加
 
 #### 4. 失敗バージョンの考慮
 **重要**: 失敗したリリースで番号が飛んだ場合は、1つ前の成功バージョンからの差分をまとめて記載

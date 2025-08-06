@@ -110,7 +110,7 @@ main() {
     print_success "Release tag created successfully!"
     echo ""
     print_info "Next steps:"
-    echo "  1. Monitor GitHub Actions: ./github-shared/rust-cli-kiln/scripts/release/07-monitor-release.sh v$CURRENT_VERSION"
+    echo "  1. Monitor GitHub Actions: ./github-shared/rust-cli-kiln/scripts/release/07-monitor-build-actions.sh v$CURRENT_VERSION"
     echo "  2. Or check manually: $(git remote get-url origin | sed 's/\.git$//')/actions"
 }
 

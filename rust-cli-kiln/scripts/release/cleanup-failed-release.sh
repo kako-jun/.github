@@ -162,7 +162,7 @@ check_and_yank_crate "${PROJECT_NAME}"
 echo ""
 print_info "Checking npm package..."
 if command -v npm &> /dev/null; then
-    local npm_versions=$(npm view ${PROJECT_NAME}-js versions --json 2>/dev/null | jq -r '.[]' 2>/dev/null || echo "")
+    npm_versions=$(npm view ${PROJECT_NAME}-js versions --json 2>/dev/null | jq -r '.[]' 2>/dev/null || echo "")
     if echo "$npm_versions" | grep -q "^$VERSION_CLEAN$"; then
         print_warning "Found ${PROJECT_NAME}-js@$VERSION_CLEAN on npm"
         print_info "To unpublish from npm (only possible within 24 hours):"
@@ -198,7 +198,7 @@ fi
 echo ""
 print_info "Checking PyPI package..."
 if command -v pip &> /dev/null; then
-    local pypi_versions=$(pip index versions ${PROJECT_NAME}-python 2>/dev/null | grep "Available versions:" | sed 's/Available versions: //' || echo "")
+    pypi_versions=$(pip index versions ${PROJECT_NAME}-python 2>/dev/null | grep "Available versions:" | sed 's/Available versions: //' || echo "")
     if echo "$pypi_versions" | grep -q "$VERSION_CLEAN"; then
         print_warning "Found ${PROJECT_NAME}-python@$VERSION_CLEAN on PyPI"
         print_warning "PyPI does not allow deletion of packages automatically."

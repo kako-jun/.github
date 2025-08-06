@@ -294,7 +294,7 @@ main() {
     echo ""
     print_success "🎉 All build and test checks passed!"
     print_info "Ready for publishing - all packages built and tested successfully"
-    print_info "Next step: Run 06-publish.sh to publish all packages atomically"
+    print_info "Next step: Run 06-create-release-tag.sh to create and push release tag"
 }
 
 # Run main function

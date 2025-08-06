@@ -73,4 +73,16 @@
 
 ---
 
-📝 **最終更新**: Claude Code セッション - 3プロジェクト統合テスト完了時点
+## 🎯 diffai 設計哲学・継続方針
+
+**重要**: diffaiでは「ML分析オプション」という概念は存在しない。各ファイル形式で技術的に可能な最大限の分析を**標準機能として自動提供**する。
+
+- `learning_rate_tracking`, `optimizer_comparison`等は実装管理用の識別子
+- ユーザーには「PyTorchファイルで自動提供される機能」として説明
+- 出力では機能名を区分として使用（可読性・構造化のため）
+
+詳細: `/home/d131/repos/42/2025/diffai/DIFFAI_DESIGN_PHILOSOPHY.md`
+
+---
+
+📝 **最終更新**: Claude Code セッション - diffai設計哲学確立・Phase A2完了時点
