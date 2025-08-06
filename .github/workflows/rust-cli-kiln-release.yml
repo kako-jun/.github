@@ -178,13 +178,12 @@ jobs:
         uv pip install maturin wheel build twine || exit 1
         
         echo "Step 1: Running comprehensive build and test (6OS parallel build)..."
-        # Skip Python wheel build for all platforms as it's handled by maturin-action
-        export SKIP_PYTHON_WHEEL_BUILD=1
         export CARGO_BUILD_TARGET=${{ matrix.target }}
         
-        # For non-Ubuntu platforms, skip Python package entirely
+        # Skip Python package build for non-Ubuntu platforms
+        # Python wheels are built by maturin-action for Ubuntu only
         if [[ "${{ matrix.os }}" != "ubuntu-latest" ]]; then
-          export SKIP_PYTHON_PACKAGE=1
+          export SKIP_PYTHON_WHEEL_BUILD=1
         fi
         
         github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh
