@@ -180,13 +180,21 @@ jobs:
         echo "Step 1: Running comprehensive build and test (6OS parallel build)..."
         export CARGO_BUILD_TARGET=${{ matrix.target }}
         
-        # Skip Python package build for non-Ubuntu platforms
+        # For non-Ubuntu platforms, temporarily rename Python directory to skip it
         # Python wheels are built by maturin-action for Ubuntu only
-        if [[ "${{ matrix.os }}" != "ubuntu-latest" ]]; then
-          export SKIP_PYTHON_WHEEL_BUILD=1
+        PROJECT_NAME="${{ inputs.project-name }}"
+        if [[ "${{ matrix.os }}" != "ubuntu-latest" ]] && [ -d "${PROJECT_NAME}-python" ]; then
+          echo "Temporarily disabling Python package for non-Ubuntu platform..."
+          mv ${PROJECT_NAME}-python ${PROJECT_NAME}-python.disabled
         fi
         
         github-shared/rust-cli-kiln/scripts/release/05-build-and-test.sh
+        
+        # Restore Python directory if it was disabled
+        PROJECT_NAME="${{ inputs.project-name }}"
+        if [ -d "${PROJECT_NAME}-python.disabled" ]; then
+          mv ${PROJECT_NAME}-python.disabled ${PROJECT_NAME}-python
+        fi
         
     - name: Upload Rust binary artifacts
       if: always()  
