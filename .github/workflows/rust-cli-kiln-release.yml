@@ -107,8 +107,9 @@ jobs:
         
     - name: Build Python wheel with manylinux
       uses: messense/maturin-action@v1
+      if: matrix.os == 'ubuntu-latest' && matrix.arch == 'x64'
       with:
-        working-directory: ${{ inputs.project-name }}-python
+        working-directory: ./${{ inputs.project-name }}-python
         manylinux: 2_28
         args: --release --out ../target/wheels
         
@@ -123,10 +124,25 @@ jobs:
         export WORKFLOW_CALL_PROJECT="${{ inputs.project-name }}"
         
         # Create symlink and verify it works
-        ./scripts/utils/create-github-shared-symlink.sh
+        if [ -f ./scripts/utils/create-github-shared-symlink.sh ]; then
+          ./scripts/utils/create-github-shared-symlink.sh
+        else
+          echo "Warning: create-github-shared-symlink.sh not found, creating symlink manually"
+          ln -s .github github-shared
+        fi
+        
+        # Debug: show current directory structure
+        echo "Current directory: $(pwd)"
+        echo "Directory contents:"
+        ls -la
         
         # Source common.sh from the symlinked .github
-        source github-shared/rust-cli-kiln/scripts/utils/common.sh
+        if [ -f github-shared/rust-cli-kiln/scripts/utils/common.sh ]; then
+          source github-shared/rust-cli-kiln/scripts/utils/common.sh
+        else
+          echo "Error: common.sh not found at expected path"
+          exit 1
+        fi
         
         # Setup unified environment
         setup_github_actions_env
